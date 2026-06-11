@@ -19,7 +19,6 @@
       overflow-x: hidden;
     }
 
-    /* SPLASH SCREEN - Pantalla de bienvenida animada */
     .splash-screen {
       position: fixed;
       top: 0;
@@ -96,7 +95,6 @@
       visibility: hidden;
     }
 
-    /* Login - Colores GCA Technologies */
     .login-container {
       min-height: 100vh;
       display: flex;
@@ -151,7 +149,6 @@
     }
     .error { color: #ff6b6b; margin-top: 10px; display: none; }
 
-    /* App Header */
     .app-header {
       background: linear-gradient(135deg, #0d2137, #1a3a5c);
       padding: 0.8rem 2rem;
@@ -224,7 +221,6 @@
       background: #dc3545;
     }
 
-    /* Main Content */
     .main-content {
       padding: 1rem;
       max-width: 1400px;
@@ -237,7 +233,6 @@
       display: block;
     }
 
-    /* Cards */
     .card {
       background: rgba(26, 58, 92, 0.6);
       backdrop-filter: blur(5px);
@@ -261,7 +256,6 @@
       letter-spacing: 1px;
     }
 
-    /* Tablas */
     table {
       width: 100%;
       border-collapse: collapse;
@@ -280,7 +274,6 @@
       background: rgba(74, 124, 158, 0.2);
     }
 
-    /* Grids */
     .dashboard-grid {
       display: grid;
       grid-template-columns: 1fr 350px;
@@ -315,7 +308,6 @@
       .mobile-nav { display: none; }
     }
 
-    /* Partidos */
     .partido-item {
       background: rgba(13, 33, 55, 0.6);
       border-radius: 8px;
@@ -382,7 +374,6 @@
       border-left: 3px solid #4a7c9e;
     }
 
-    /* Stats */
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -407,7 +398,6 @@
       color: #c0c0c0;
     }
 
-    /* Admin */
     .admin-tabs {
       display: flex;
       gap: 0.5rem;
@@ -477,7 +467,6 @@
       color: white;
     }
 
-    /* Adherencia */
     .adherencia-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -518,7 +507,6 @@
       border-color: #c0c0c0;
     }
 
-    /* Bono Row */
     .bono-row {
       display: flex;
       gap: 0.5rem;
@@ -527,7 +515,6 @@
       flex-wrap: wrap;
     }
 
-    /* Toast */
     .toast {
       position: fixed;
       bottom: 20px;
@@ -545,36 +532,19 @@
       70% { opacity: 1; }
       100% { opacity: 0; visibility: hidden; }
     }
-    
-    /* Loading indicator */
-    .loading-spinner {
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      border: 2px solid rgba(192, 192, 192, 0.3);
-      border-top-color: #c0c0c0;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin-left: 8px;
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
   </style>
 </head>
 <body>
-  <!-- SPLASH SCREEN -->
   <div id="splashScreen" class="splash-screen">
     <div class="splash-content">
       <div class="splash-ball">⚽</div>
       <h1 class="splash-title">MUNDIALITO GCA</h1>
       <p class="splash-sub">GCA Technologies</p>
       <div class="splash-bar"><div class="splash-bar-fill"></div></div>
-      <p id="splashStatus" style="margin-top: 1rem; font-size: 0.8rem; color: #a0a0a0;">Conectando con servidor...</p>
+      <p id="splashStatus" style="margin-top: 1rem; font-size: 0.8rem; color: #a0a0a0;">Conectando...</p>
     </div>
   </div>
 
-  <!-- Pantalla de Login -->
   <div id="loginScreen" class="login-container" style="display: none;">
     <div class="login-card">
       <h1>⚽ MUNDIALITO GCA 2026</h1>
@@ -589,7 +559,6 @@
     </div>
   </div>
 
-  <!-- Pantalla Login Admin -->
   <div id="adminLoginScreen" class="login-container" style="display: none;">
     <div class="login-card">
       <h1>🔐 PANEL ADMIN</h1>
@@ -601,7 +570,6 @@
     </div>
   </div>
 
-  <!-- App Principal -->
   <div id="app" style="display: none;">
     <div class="app-header">
       <div class="logo">⚽ MUNDIALITO <span>GCA 2026</span></div>
@@ -617,7 +585,6 @@
     </div>
 
     <div class="main-content">
-      <!-- Dashboard -->
       <div id="pageDashboard" class="page active">
         <div class="dashboard-grid">
           <div>
@@ -640,7 +607,6 @@
         <div class="stats-grid" id="statsGrid"></div>
       </div>
 
-      <!-- Predicciones -->
       <div id="pagePredicciones" class="page">
         <div class="card">
           <div class="card-title">🎯 Mis Predicciones</div>
@@ -651,7 +617,6 @@
         </div>
       </div>
 
-      <!-- Admin -->
       <div id="pageAdmin" class="page">
         <div class="admin-tabs">
           <button class="admin-tab active" onclick="showAdminTab('equipos')">👥 Equipos</button>
@@ -676,9 +641,10 @@
   <script>
 // ==================== SUPABASE ====================
 const SUPABASE_URL = 'https://rbkopqwvzignqimcwmsi.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_81_d79sC5bWZls7MggwbWg_IklWjISl';
+const SUPABASE_ANON_KEY = 'sb_publishable_81_d79sC5bWZls7MggwbWg_IklWjISl';
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// Crear cliente de Supabase (solo una vez)
+window.db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ==================== PARTIDOS ====================
 const PARTIDOS = [
@@ -724,10 +690,7 @@ const PARTIDOS = [
 const CONFIG = {
   adminPass: 'admin2026',
   ptsExacto: 5,
-  ptsGanador: 2,
-  ptsAdherencia: { todos: 5, uno: 3, dos: 1, mas: 0 },
-  ptsBonos: { adherenciaSemanal: 10, calidadSemanal: 10, productividadSemanal: 10, asistencia: 5 },
-  ptsPenalizaciones: { conducta: -5, inasistencia: -10, convivencia: -10 }
+  ptsGanador: 2
 };
 
 // ==================== VARIABLES GLOBALES ====================
@@ -736,19 +699,13 @@ let currentPage = 'dashboard';
 let equipos = [];
 let resultados = {};
 let predicciones = {};
-let adherencia = {};
-let bonos = [];
-let penalizaciones = [];
 
-// ==================== FUNCIONES DE SUPABASE CON ERROR HANDLING ====================
+// ==================== FUNCIONES DE SUPABASE ====================
 async function cargarEquipos() {
   try {
-    const { data, error } = await supabase.from('equipos').select('*');
+    const { data, error } = await window.db.from('equipos').select('*');
     if (error) throw error;
     equipos = data || [];
-    if (equipos.length === 0) {
-      console.warn('No hay equipos en la base de datos');
-    }
     cargarEquiposLogin();
     if (currentUser && !currentUser.isAdmin) {
       const userEquipo = equipos.find(e => e.id === currentUser.id);
@@ -756,24 +713,21 @@ async function cargarEquipos() {
       document.getElementById('userBadge').textContent = `🟢 ${currentUser.nombre}`;
     }
     if (currentPage === 'dashboard') renderDashboard();
-    if (currentPage === 'admin' && currentUser?.isAdmin && document.getElementById('adminEquipos')?.classList.contains('active')) renderAdminEquipos();
     return true;
   } catch (error) {
     console.error('Error cargando equipos:', error);
-    mostrarToast('❌ Error al cargar equipos de Supabase', 'error');
     return false;
   }
 }
 
 async function cargarResultados() {
   try {
-    const { data, error } = await supabase.from('resultados').select('*');
+    const { data, error } = await window.db.from('resultados').select('*');
     if (error) throw error;
     resultados = {};
     (data || []).forEach(r => { resultados[r.partido_id] = { local: r.local, visita: r.visita }; });
     if (currentPage === 'dashboard') renderDashboard();
     if (currentPage === 'predicciones') renderPredicciones();
-    if (currentPage === 'admin' && currentUser?.isAdmin && document.getElementById('adminResultados')?.classList.contains('active')) renderAdminResultados();
     return true;
   } catch (error) {
     console.error('Error cargando resultados:', error);
@@ -783,7 +737,7 @@ async function cargarResultados() {
 
 async function cargarPredicciones() {
   try {
-    const { data, error } = await supabase.from('predicciones').select('*');
+    const { data, error } = await window.db.from('predicciones').select('*');
     if (error) throw error;
     predicciones = {};
     (data || []).forEach(p => {
@@ -792,7 +746,6 @@ async function cargarPredicciones() {
     });
     if (currentPage === 'dashboard') renderDashboard();
     if (currentPage === 'predicciones') renderPredicciones();
-    if (currentPage === 'admin' && currentUser?.isAdmin && document.getElementById('adminPrediccionesAdmin')?.classList.contains('active')) renderAdminPredicciones();
     return true;
   } catch (error) {
     console.error('Error cargando predicciones:', error);
@@ -800,56 +753,14 @@ async function cargarPredicciones() {
   }
 }
 
-async function cargarBonos() {
-  try {
-    const { data, error } = await supabase.from('bonos').select('*');
-    if (error) throw error;
-    bonos = data || [];
-    if (currentPage === 'dashboard') renderDashboard();
-    if (currentPage === 'admin' && currentUser?.isAdmin && document.getElementById('adminBonos')?.classList.contains('active')) renderAdminBonos();
-    return true;
-  } catch (error) {
-    console.error('Error cargando bonos:', error);
-    return false;
-  }
-}
-
-async function cargarPenalizaciones() {
-  try {
-    const { data, error } = await supabase.from('penalizaciones').select('*');
-    if (error) throw error;
-    penalizaciones = data || [];
-    if (currentPage === 'dashboard') renderDashboard();
-    if (currentPage === 'admin' && currentUser?.isAdmin && document.getElementById('adminPenalizaciones')?.classList.contains('active')) renderAdminPenalizaciones();
-    return true;
-  } catch (error) {
-    console.error('Error cargando penalizaciones:', error);
-    return false;
-  }
-}
-
-async function cargarAdherencia() {
-  try {
-    const { data, error } = await supabase.from('adherencia').select('*');
-    if (error) throw error;
-    adherencia = {};
-    (data || []).forEach(a => {
-      if (!adherencia[a.equipo_id]) adherencia[a.equipo_id] = {};
-      adherencia[a.equipo_id][a.fecha] = a.puntos;
-    });
-    if (currentPage === 'dashboard') renderDashboard();
-    if (currentPage === 'admin' && currentUser?.isAdmin && document.getElementById('adminAdherencia')?.classList.contains('active')) renderAdminAdherencia();
-    return true;
-  } catch (error) {
-    console.error('Error cargando adherencia:', error);
-    return false;
-  }
-}
-
-// Funciones de guardado (simplificadas para el ejemplo)
 async function guardarPrediccion(equipoId, partidoId, local, visita) {
   try {
-    const { error } = await supabase.from('predicciones').upsert({ equipo_id: equipoId, partido_id: partidoId, local, visita });
+    const { error } = await window.db.from('predicciones').upsert({ 
+      equipo_id: equipoId, 
+      partido_id: partidoId, 
+      local, 
+      visita 
+    });
     if (error) throw error;
     await cargarPredicciones();
     mostrarToast('✅ Predicción guardada');
@@ -861,7 +772,7 @@ async function guardarPrediccion(equipoId, partidoId, local, visita) {
   }
 }
 
-// ==================== LÓGICA DEL NEGOCIO (igual que antes) ====================
+// ==================== LÓGICA DEL NEGOCIO ====================
 function calcularPuntosPrediccion(predLocal, predVisit, resLocal, resVisit) {
   if (resLocal === undefined || resVisit === undefined) return null;
   if (predLocal === resLocal && predVisit === resVisit) return CONFIG.ptsExacto;
@@ -888,15 +799,8 @@ function calcularTotalPuntos() {
         }
       }
     }
-    let puntosAdherencia = 0;
-    const adhEquipo = adherencia[equipo.id] || {};
-    for (const fecha in adhEquipo) puntosAdherencia += adhEquipo[fecha];
-    let puntosBonos = 0;
-    for (const bono of bonos) if (bono.equipo_id === equipo.id) puntosBonos += bono.puntos;
-    let puntosPenalizaciones = 0;
-    for (const penal of penalizaciones) if (penal.equipo_id === equipo.id) puntosPenalizaciones += penal.puntos;
-    const total = puntosPrediccion + puntosAdherencia + puntosBonos + puntosPenalizaciones;
-    ranking.push({ id: equipo.id, nombre: equipo.nombre, puntosPrediccion, puntosAdherencia, puntosBonos, puntosPenalizaciones, total, exactos });
+    const total = puntosPrediccion;
+    ranking.push({ id: equipo.id, nombre: equipo.nombre, puntosPrediccion, total, exactos });
   }
   ranking.sort((a, b) => b.total - a.total || b.exactos - a.exactos);
   return ranking;
@@ -904,12 +808,15 @@ function calcularTotalPuntos() {
 
 function renderDashboard() {
   const ranking = calcularTotalPuntos();
-  const rankingHTML = `<table><thead><tr><th>#</th><th>Equipo</th><th>Total</th><th>Pred</th><th>Adh</th><th>Bonus</th><th>Pen</th><th>🎯</th></tr></thead><tbody>${ranking.map((eq, i) => `<tr><td>${i+1} ${i===0?'🏆':''}${i===1?'🥈':''}${i===2?'🥉':''}</td><td>${eq.nombre}</td><td style="color:#c0c0c0;font-weight:bold">${eq.total}</td><td style="color:#6c9ebf">${eq.puntosPrediccion}</td><td style="color:#6c9ebf">${eq.puntosAdherencia}</td><td style="color:#c0c0c0">${eq.puntosBonos}</td><td style="color:#ff6b6b">${eq.puntosPenalizaciones}</td><td>${eq.exactos}</td></tr>`).join('')}</tbody></table>`;
+  const rankingHTML = `<table><thead><tr><th>#</th><th>Equipo</th><th>Total</th><th>Pred</th><th>🎯</th></tr></thead><tbody>${ranking.map((eq, i) => `<tr><td style="font-weight:bold">${i+1} ${i===0?'🏆':''}${i===1?'🥈':''}${i===2?'🥉':''}</td><td style="font-weight:bold">${eq.nombre}</td><td style="color:#c0c0c0;font-weight:bold">${eq.total}</td><td style="color:#6c9ebf">${eq.puntosPrediccion}</td><td>${eq.exactos}</td></tr>`).join('')}</tbody></table>`;
   document.getElementById('rankingList').innerHTML = rankingHTML;
+  
   const proximos = PARTIDOS.filter(p => !resultados[p.id]).slice(0, 5);
   document.getElementById('proximosPartidos').innerHTML = proximos.map(p => `<div class="partido-item"><div class="partido-equipos"><span class="equipo-local">${p.local}</span><span class="vs">VS</span><span class="equipo-visita">${p.visita}</span></div><div style="font-size:0.7rem;color:#888;text-align:center;margin-top:5px">📅 ${p.fecha} · Grupo ${p.grupo}</div></div>`).join('') || '<div style="text-align:center;padding:20px">✅ ¡Todos los partidos jugados!</div>';
+  
   const ultimos = PARTIDOS.filter(p => resultados[p.id]).slice(-5).reverse();
   document.getElementById('ultimosResultados').innerHTML = ultimos.map(p => `<div class="partido-item"><div class="partido-equipos"><span class="equipo-local">${p.local}</span><span class="vs">${resultados[p.id].local} - ${resultados[p.id].visita}</span><span class="equipo-visita">${p.visita}</span></div><div style="font-size:0.7rem;color:#888;text-align:center;margin-top:5px">📅 ${p.fecha}</div></div>`).join('') || '<div style="text-align:center;padding:20px">📋 Sin resultados aún</div>';
+  
   const top = ranking[0] || { nombre: '-', total: 0, exactos: 0 };
   document.getElementById('statsGrid').innerHTML = `<div class="stat-card"><div class="value">${top.nombre}</div><div>🏆 Líder</div></div><div class="stat-card"><div class="value">${top.total}</div><div>Puntos Totales</div></div><div class="stat-card"><div class="value">${top.exactos}</div><div>🎯 Exactos</div></div><div class="stat-card"><div class="value">${Object.keys(resultados).length}</div><div>Partidos Jugados</div></div>`;
 }
@@ -935,7 +842,7 @@ function renderPredicciones() {
       } else if (pred.local !== undefined && pred.visita !== undefined) {
         html += `<div class="pred-resultado">✅ Tu predicción guardada: <strong>${pred.local} - ${pred.visita}</strong></div>`;
       } else {
-        html += `<div class="pred-inputs"><input type="number" id="predL_${p.id}" value="" placeholder="0" min="0" max="20" onchange="guardarPrediccionHandler(${p.id})"><span>-</span><input type="number" id="predV_${p.id}" value="" placeholder="0" min="0" max="20" onchange="guardarPrediccionHandler(${p.id})"></div>`;
+        html += `<div class="pred-inputs"><input type="number" id="predL_${p.id}" value="" placeholder="0" min="0" max="20"><span>-</span><input type="number" id="predV_${p.id}" value="" placeholder="0" min="0" max="20"><br><button class="btn btn-primary" style="margin-top:5px" onclick="guardarPrediccionHandler(${p.id})">💾 Guardar</button></div>`;
       }
       html += `</div>`;
     }
@@ -958,44 +865,41 @@ async function guardarPrediccionHandler(partidoId) {
   renderPredicciones();
 }
 
-// Funciones básicas de UI
+// Funciones de UI
 function renderAdminEquipos() {
-  const html = `<div class="card"><div class="card-title">👥 Gestión de Equipos</div>${equipos.map(eq => `<div class="equipo-row"><input type="text" id="nombre_${eq.id}" value="${eq.nombre}" style="width:150px"><input type="password" id="pin_${eq.id}" value="${eq.pin}" style="width:80px"><span style="color:${eq.activo?'#6c9ebf':'#ff6b6b'}">${eq.activo?'✅ Activo':'❌ Inactivo'}</span><button class="btn btn-primary" onclick="mostrarToast('Edición de equipos habilitada en la consola')">💾</button></div>`).join('')}<button class="btn btn-primary" style="margin-top:1rem" onclick="mostrarToast('Agregar equipos disponible en la base de datos')">+ Agregar Equipo</button></div>`;
+  const html = `<div class="card"><div class="card-title">👥 Gestión de Equipos</div>${equipos.map(eq => `<div class="equipo-row"><span><strong>${eq.nombre}</strong> (PIN: ${eq.pin})</span><span style="color:${eq.activo?'#6c9ebf':'#ff6b6b'}">${eq.activo?'✅ Activo':'❌ Inactivo'}</span></div>`).join('')}</div>`;
   document.getElementById('adminEquipos').innerHTML = html;
 }
 
 function renderAdminResultados() {
-  let html = `<div class="card"><div class="card-title">⚽ Registrar Resultados Reales</div>`;
+  let html = `<div class="card"><div class="card-title">⚽ Resultados Registrados</div>`;
   for (const p of PARTIDOS) {
     const res = resultados[p.id] || {};
-    html += `<div class="partido-item"><div class="partido-equipos"><span class="equipo-local"><strong>${p.local}</strong></span><span class="vs">VS</span><span class="equipo-visita"><strong>${p.visita}</strong></span></div><div style="display:flex;justify-content:center;gap:0.5rem;margin-top:0.5rem;flex-wrap:wrap"><span>Resultado: ${res.local !== undefined ? res.local + ' - ' + res.visita : 'No registrado'}</span></div></div>`;
+    html += `<div class="partido-item"><div class="partido-equipos"><span class="equipo-local"><strong>${p.local}</strong></span><span class="vs">VS</span><span class="equipo-visita"><strong>${p.visita}</strong></span></div><div style="text-align:center;margin-top:5px">Resultado: ${res.local !== undefined ? res.local + ' - ' + res.visita : 'No registrado'}</div></div>`;
   }
   html += `</div>`;
   document.getElementById('adminResultados').innerHTML = html;
 }
 
 function renderAdminAdherencia() {
-  const html = `<div class="card"><div class="card-title">📋 Adherencia Operativa Diaria</div><div style="text-align:center;padding:20px;color:#888">Panel de adherencia disponible en la versión completa</div></div>`;
-  document.getElementById('adminAdherencia').innerHTML = html;
+  document.getElementById('adminAdherencia').innerHTML = `<div class="card"><div class="card-title">📋 Adherencia</div><div style="text-align:center;padding:20px;color:#888">Panel en construcción</div></div>`;
 }
 
 function renderAdminBonos() {
-  const html = `<div class="card"><div class="card-title">⭐ Bonificaciones</div><div style="text-align:center;padding:20px;color:#888">${bonos.length} bonos registrados</div></div>`;
-  document.getElementById('adminBonos').innerHTML = html;
+  document.getElementById('adminBonos').innerHTML = `<div class="card"><div class="card-title">⭐ Bonificaciones</div><div style="text-align:center;padding:20px;color:#888">Panel en construcción</div></div>`;
 }
 
 function renderAdminPenalizaciones() {
-  const html = `<div class="card"><div class="card-title">🚫 Penalizaciones</div><div style="text-align:center;padding:20px;color:#888">${penalizaciones.length} penalizaciones registradas</div></div>`;
-  document.getElementById('adminPenalizaciones').innerHTML = html;
+  document.getElementById('adminPenalizaciones').innerHTML = `<div class="card"><div class="card-title">🚫 Penalizaciones</div><div style="text-align:center;padding:20px;color:#888">Panel en construcción</div></div>`;
 }
 
 function renderAdminPredicciones() {
-  let html = `<div class="card"><div class="card-title">👁️ Ver Predicciones de los Equipos</div>`;
+  let html = `<div class="card"><div class="card-title">👁️ Predicciones de Equipos</div>`;
   for (const equipo of equipos) {
     if (!equipo.activo) continue;
     const predsEquipo = predicciones[equipo.id] || {};
     const cantidad = Object.keys(predsEquipo).length;
-    html += `<div class="partido-item"><strong>${equipo.nombre}</strong>: ${cantidad} predicciones realizadas</div>`;
+    html += `<div class="partido-item"><strong>${equipo.nombre}</strong>: ${cantidad} predicciones</div>`;
   }
   html += `</div>`;
   document.getElementById('adminPrediccionesAdmin').innerHTML = html;
@@ -1104,43 +1008,31 @@ function mostrarToast(mensaje, tipo = 'success') {
   setTimeout(() => toast.remove(), 3000);
 }
 
-// ==================== INICIALIZACIÓN CON TIMEOUT ====================
+// ==================== INICIALIZACIÓN ====================
 window.addEventListener('DOMContentLoaded', async () => {
   const splash = document.getElementById('splashScreen');
   const splashStatus = document.getElementById('splashStatus');
   
   try {
-    splashStatus.textContent = 'Cargando datos del servidor...';
-    
-    // Cargar todos los datos con Promise.all
+    splashStatus.textContent = 'Cargando datos...';
     await Promise.all([
       cargarEquipos(),
       cargarResultados(),
-      cargarPredicciones(),
-      cargarBonos(),
-      cargarPenalizaciones(),
-      cargarAdherencia()
+      cargarPredicciones()
     ]);
-    
     splashStatus.textContent = '¡Listo!';
-    
-    // Esperar un momento para mostrar el estado
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
   } catch (error) {
-    console.error('Error en la inicialización:', error);
-    splashStatus.textContent = 'Error de conexión, usando modo offline';
-    mostrarToast('⚠️ Error de conexión con Supabase. Verifica tu internet.', 'error');
-  } finally {
-    // Siempre mostrar el login después de 2.5 segundos o cuando termine la carga
-    setTimeout(() => {
-      splash.classList.add('hide');
-      setTimeout(() => {
-        splash.style.display = 'none';
-        document.getElementById('loginScreen').style.display = 'flex';
-      }, 800);
-    }, 2000);
+    console.error('Error:', error);
+    splashStatus.textContent = 'Error de conexión';
   }
+  
+  setTimeout(() => {
+    splash.classList.add('hide');
+    setTimeout(() => {
+      splash.style.display = 'none';
+      document.getElementById('loginScreen').style.display = 'flex';
+    }, 800);
+  }, 2000);
 });
 
 // Exponer funciones globales
@@ -1152,7 +1044,6 @@ window.doAdminLogin = doAdminLogin;
 window.showAdminLogin = showAdminLogin;
 window.hideAdminLogin = hideAdminLogin;
 window.logout = logout;
-window.mostrarToast = mostrarToast;
   </script>
 </body>
 </html>
