@@ -29,7 +29,7 @@
     .login-card { background: rgba(26,58,92,0.95); padding: 2rem; border-radius: 16px; width: 350px; text-align: center; border: 1px solid rgba(192,192,192,0.3); }
     .login-card h1 { color: #c0c0c0; margin-bottom: 1rem; }
     .login-card input, .login-card select { width: 100%; padding: 10px; margin: 8px 0; background: rgba(13,33,55,0.8); border: 1px solid rgba(192,192,192,0.3); border-radius: 8px; color: white; }
-    .login-card button { width: 100%; padding: 10px; margin-top: 10px; background: #2c5282; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; color: #c0c0c0; transition: 0.3s; }
+    .login-card button { width: 100%; padding: 10px; margin-top: 10px; background: #2c5282; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; color: #c0c0c0; }
     .login-card button:hover { background: #4a7c9e; color: white; }
     .error { color: #ff6b6b; margin-top: 10px; display: none; }
 
@@ -42,7 +42,7 @@
     .nav-btn.active { background: #4a7c9e; color: white; }
     .user-info { display: flex; align-items: center; gap: 0.8rem; }
     .user-badge { background: rgba(74,124,158,0.3); padding: 0.3rem 0.8rem; border-radius: 20px; color: #c0c0c0; font-size: 0.85rem; }
-    .logout-btn { background: #dc3545; border: none; padding: 0.3rem 1rem; border-radius: 8px; color: white; cursor: pointer; font-size: 0.8rem; }
+    .logout-btn { background: #dc3545; border: none; padding: 0.3rem 1rem; border-radius: 8px; color: white; cursor: pointer; }
 
     .main-content { padding: 1rem; max-width: 1400px; margin: 0 auto; }
     .page { display: none; }
@@ -50,14 +50,14 @@
     .card { background: rgba(26,58,92,0.6); border-radius: 12px; padding: 1rem; margin-bottom: 1rem; border: 1px solid rgba(192,192,192,0.2); }
     .card-title { color: #c0c0c0; margin-bottom: 1rem; font-weight: bold; border-bottom: 1px solid rgba(192,192,192,0.2); padding-bottom: 0.5rem; }
     .dashboard-grid { display: grid; grid-template-columns: 1fr 350px; gap: 1rem; }
-    @media (max-width: 768px) { .dashboard-grid { grid-template-columns: 1fr; } .nav-buttons { display: none; } .mobile-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #0d2137; display: flex; padding: 0.5rem; border-top: 1px solid #c0c0c0; z-index: 100; } .mobile-nav button { flex: 1; background: transparent; border: none; color: #a0a0a0; padding: 0.5rem; font-size: 0.7rem; } .mobile-nav button.active { color: #c0c0c0; } .main-content { padding-bottom: 70px; } }
+    @media (max-width: 768px) { .dashboard-grid { grid-template-columns: 1fr; } .nav-buttons { display: none; } .mobile-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #0d2137; display: flex; padding: 0.5rem; border-top: 1px solid #c0c0c0; } .mobile-nav button { flex: 1; background: transparent; border: none; color: #a0a0a0; padding: 0.5rem; font-size: 0.7rem; } .mobile-nav button.active { color: #c0c0c0; } .main-content { padding-bottom: 70px; } }
     @media (min-width: 769px) { .mobile-nav { display: none; } }
 
     table { width: 100%; border-collapse: collapse; }
     th, td { padding: 8px; text-align: left; border-bottom: 1px solid rgba(192,192,192,0.1); font-size: 0.85rem; }
     th { color: #c0c0c0; }
     tr:hover { background: rgba(74,124,158,0.2); }
-    .rank-pts { color: #ffc107; font-weight: bold; font-size: 1.1rem; }
+    .rank-pts { color: #ffc107; font-weight: bold; font-size: 1.2rem; }
 
     .partido-item { background: rgba(13,33,55,0.6); border-radius: 8px; padding: 0.8rem; margin-bottom: 0.5rem; border: 1px solid rgba(192,192,192,0.15); }
     .partido-equipos { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
@@ -73,7 +73,7 @@
     .stat-card .value { font-size: 1.8rem; font-weight: bold; color: #ffc107; }
 
     .admin-tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
-    .admin-tab { background: rgba(13,33,55,0.8); border: 1px solid rgba(192,192,192,0.2); padding: 0.5rem 1rem; border-radius: 8px; color: #a0a0a0; cursor: pointer; font-size: 0.8rem; }
+    .admin-tab { background: rgba(13,33,55,0.8); border: 1px solid rgba(192,192,192,0.2); padding: 0.5rem 1rem; border-radius: 8px; color: #a0a0a0; cursor: pointer; }
     .admin-tab.active { background: #4a7c9e; color: white; }
     .admin-panel { display: none; }
     .admin-panel.active { display: block; }
@@ -136,30 +136,13 @@
     <div class="main-content">
       <div id="pageDashboard" class="page active">
         <div class="dashboard-grid">
-          <div>
-            <div class="card">
-              <div class="card-title">🏆 Tabla de Posiciones</div>
-              <div id="rankingList"></div>
-            </div>
-          </div>
-          <div>
-            <div class="card">
-              <div class="card-title">📅 Próximos Partidos</div>
-              <div id="proximosPartidos"></div>
-            </div>
-            <div class="card">
-              <div class="card-title">✅ Últimos Resultados</div>
-              <div id="ultimosResultados"></div>
-            </div>
-          </div>
+          <div><div class="card"><div class="card-title">🏆 Tabla de Posiciones</div><div id="rankingList"></div></div></div>
+          <div><div class="card"><div class="card-title">📅 Próximos Partidos</div><div id="proximosPartidos"></div></div><div class="card"><div class="card-title">✅ Últimos Resultados</div><div id="ultimosResultados"></div></div></div>
         </div>
         <div class="stats-grid" id="statsGrid"></div>
       </div>
       <div id="pagePredicciones" class="page">
-        <div class="card">
-          <div class="card-title">🎯 Mis Predicciones</div>
-          <div id="prediccionesList"></div>
-        </div>
+        <div class="card"><div class="card-title">🎯 Mis Predicciones</div><div id="prediccionesList"></div></div>
       </div>
       <div id="pageAdmin" class="page">
         <div class="admin-tabs">
@@ -231,79 +214,88 @@
     let currentPage = 'dashboard';
     let equiposCache = [];
 
-    async function fetchAPI(table, method = 'GET', body = null) {
+    async function apiFetch(table, method = 'GET', body = null) {
       const url = `${SUPABASE_URL}/rest/v1/${table}`;
       const headers = { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' };
       const options = { method, headers };
-      if (body) options.body = JSON.stringify(body);
-      const response = await fetch(url, options);
-      return await response.json();
+      if (body && (method === 'POST' || method === 'PATCH')) options.body = JSON.stringify(body);
+      const res = await fetch(url, options);
+      if (!res.ok) throw new Error(`Error ${res.status}`);
+      return res.json();
     }
 
     async function cargarEquipos() {
-      const data = await fetchAPI('equipos');
-      equiposCache = data;
+      try {
+        equiposCache = await apiFetch('equipos');
+      } catch(e) { console.error('Error cargando equipos:', e); equiposCache = []; }
       return equiposCache;
     }
 
-    async function guardarPrediccionCloud(equipoId, partidoId, local, visita) {
-      const existe = await fetchAPI(`predicciones?equipo_id=eq.${equipoId}&partido_id=eq.${partidoId}`);
-      if (existe.length > 0) {
-        await fetchAPI(`predicciones?equipo_id=eq.${equipoId}&partido_id=eq.${partidoId}`, 'PATCH', { local, visita });
-      } else {
-        await fetchAPI('predicciones', 'POST', { equipo_id: equipoId, partido_id: partidoId, local, visita });
-      }
+    async function cargarResultados() {
+      try {
+        const data = await apiFetch('resultados');
+        const res = {};
+        for (const r of data) res[r.partido_id] = { local: r.local, visita: r.visita };
+        return res;
+      } catch(e) { return {}; }
     }
 
     async function cargarPrediccionesEquipo(equipoId) {
-      const data = await fetchAPI(`predicciones?equipo_id=eq.${equipoId}`);
-      const preds = {};
-      for (const p of data) preds[p.partido_id] = { local: p.local, visita: p.visita };
-      return preds;
+      try {
+        const data = await apiFetch(`predicciones?equipo_id=eq.${equipoId}`);
+        const preds = {};
+        for (const p of data) preds[p.partido_id] = { local: p.local, visita: p.visita };
+        return preds;
+      } catch(e) { return {}; }
     }
 
-    async function cargarResultados() {
-      const data = await fetchAPI('resultados');
-      const res = {};
-      for (const r of data) res[r.partido_id] = { local: r.local, visita: r.visita };
-      return res;
+    async function guardarPrediccionCloud(equipoId, partidoId, local, visita) {
+      try {
+        const existentes = await apiFetch(`predicciones?equipo_id=eq.${equipoId}&partido_id=eq.${partidoId}`);
+        if (existentes.length > 0) {
+          await apiFetch(`predicciones?equipo_id=eq.${equipoId}&partido_id=eq.${partidoId}`, 'PATCH', { local, visita });
+        } else {
+          await apiFetch('predicciones', 'POST', { equipo_id: equipoId, partido_id: partidoId, local, visita });
+        }
+      } catch(e) { console.error('Error guardando predicción:', e); }
     }
 
     async function guardarResultadoCloud(partidoId, local, visita) {
-      const existe = await fetchAPI(`resultados?partido_id=eq.${partidoId}`);
-      if (existe.length > 0) {
-        await fetchAPI(`resultados?partido_id=eq.${partidoId}`, 'PATCH', { local, visita });
-      } else {
-        await fetchAPI('resultados', 'POST', { partido_id: partidoId, local, visita });
-      }
+      try {
+        const existentes = await apiFetch(`resultados?partido_id=eq.${partidoId}`);
+        if (existentes.length > 0) {
+          await apiFetch(`resultados?partido_id=eq.${partidoId}`, 'PATCH', { local, visita });
+        } else {
+          await apiFetch('resultados', 'POST', { partido_id: partidoId, local, visita });
+        }
+      } catch(e) { console.error('Error guardando resultado:', e); }
     }
 
     async function borrarResultadoCloud(partidoId) {
-      await fetchAPI(`resultados?partido_id=eq.${partidoId}`, 'DELETE');
+      try { await apiFetch(`resultados?partido_id=eq.${partidoId}`, 'DELETE'); } catch(e) { console.error('Error borrando resultado:', e); }
     }
 
     async function borrarTodosResultadosCloud() {
       const resultados = await cargarResultados();
       for (const partidoId of Object.keys(resultados)) {
-        await fetchAPI(`resultados?partido_id=eq.${partidoId}`, 'DELETE');
+        await borrarResultadoCloud(partidoId);
       }
     }
 
     async function guardarEquipoCloud(id, nombre, pin, activo) {
-      await fetchAPI(`equipos?id=eq.${id}`, 'PATCH', { nombre, pin, activo });
+      try { await apiFetch(`equipos?id=eq.${id}`, 'PATCH', { nombre, pin, activo }); } catch(e) { console.error('Error guardando equipo:', e); }
     }
 
     async function agregarEquipoCloud(nombre, pin) {
-      await fetchAPI('equipos', 'POST', { nombre, pin, activo: true });
+      try { await apiFetch('equipos', 'POST', { nombre, pin, activo: true }); } catch(e) { console.error('Error agregando equipo:', e); }
     }
 
-    function calcularPuntosPrediccion(predLocal, predVisit, resLocal, resVisit) {
-      if (resLocal === undefined) return null;
+    function calcularPuntos(predLocal, predVisit, resLocal, resVisit) {
+      if (resLocal === undefined) return 0;
       if (predLocal === resLocal && predVisit === resVisit) return CONFIG.ptsExacto;
       const predGanador = predLocal > predVisit ? 'L' : (predLocal < predVisit ? 'V' : 'E');
       const resGanador = resLocal > resVisit ? 'L' : (resLocal < resVisit ? 'V' : 'E');
-      if (predGanador === resGanador) return CONFIG.ptsGanador;
-      return 0;
+      return predGanador === resGanador ? CONFIG.ptsGanador : 0;
     }
 
     async function calcularRanking() {
@@ -317,7 +309,7 @@
           const res = resultados[partido.id];
           const pred = preds[partido.id];
           if (res && pred) {
-            const pts = calcularPuntosPrediccion(pred.local, pred.visita, res.local, res.visita);
+            const pts = calcularPuntos(pred.local, pred.visita, res.local, res.visita);
             if (pts === 5) { puntos += pts; exactos++; }
             else if (pts === 2) puntos += pts;
           }
@@ -332,45 +324,45 @@
       const ranking = await calcularRanking();
       const resultados = await cargarResultados();
       
-      let rankingHtml = '<table><thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>🎯</th></tr></thead><tbody>';
+      let html = '<table><thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>🎯</th></tr></thead><tbody>';
       if (ranking.length === 0) {
-        rankingHtml += '<tr><td colspan="4" style="text-align:center">Sin datos aún. Los equipos aparecerán cuando hagan predicciones.</td></tr>';
+        html += '<tr><td colspan="4" style="text-align:center">Sin datos. Agrega resultados desde Admin</td></tr>';
       } else {
         for (let i = 0; i < ranking.length; i++) {
           const eq = ranking[i];
-          rankingHtml += `<tr><td><strong>${i+1}</strong> ${i===0?'🏆':''}${i===1?'🥈':''}${i===2?'🥉':''}</td><td>${eq.nombre}</td><td class="rank-pts">${eq.puntos}</td><td>${eq.exactos}</td></tr>`;
+          html += `<tr><td><strong>${i+1}</strong> ${i===0?'🏆':''}${i===1?'🥈':''}${i===2?'🥉':''}</td><td>${eq.nombre}</td><td class="rank-pts">${eq.puntos}</td><td>${eq.exactos}</td></tr>`;
         }
       }
-      rankingHtml += '</tbody></table>';
-      document.getElementById('rankingList').innerHTML = rankingHtml;
+      html += '</tbody></table>';
+      document.getElementById('rankingList').innerHTML = html;
 
       const proximos = PARTIDOS.filter(p => !resultados[p.id]).slice(0,5);
       if (proximos.length === 0) {
-        document.getElementById('proximosPartidos').innerHTML = '<div style="text-align:center;padding:20px">✅ Todos los partidos jugados</div>';
+        document.getElementById('proximosPartidos').innerHTML = '<div style="text-align:center;padding:20px">✅ Todos jugados</div>';
       } else {
         document.getElementById('proximosPartidos').innerHTML = proximos.map(p => `<div class="partido-item"><div class="partido-equipos"><span class="equipo-local">${p.local}</span><span class="vs">VS</span><span class="equipo-visita">${p.visita}</span></div><div style="font-size:0.7rem;color:#888;text-align:center">📅 ${p.fecha} · Grupo ${p.grupo}</div></div>`).join('');
       }
 
       const ultimos = PARTIDOS.filter(p => resultados[p.id]).slice(-5).reverse();
       if (ultimos.length === 0) {
-        document.getElementById('ultimosResultados').innerHTML = '<div style="text-align:center;padding:20px">📋 Sin resultados aún</div>';
+        document.getElementById('ultimosResultados').innerHTML = '<div style="text-align:center;padding:20px">📋 Sin resultados</div>';
       } else {
         document.getElementById('ultimosResultados').innerHTML = ultimos.map(p => `<div class="partido-item"><div class="partido-equipos"><span class="equipo-local">${p.local}</span><span class="vs">${resultados[p.id].local} - ${resultados[p.id].visita}</span><span class="equipo-visita">${p.visita}</span></div><div style="font-size:0.7rem;color:#888;text-align:center">📅 ${p.fecha}</div></div>`).join('');
       }
 
-      const totalPartidos = Object.keys(resultados).length;
       const top = ranking[0] || { nombre: '-', puntos: 0, exactos: 0 };
+      const totalPartidos = Object.keys(resultados).length;
       document.getElementById('statsGrid').innerHTML = `
         <div class="stat-card"><div class="value">${top.nombre}</div><div>🏆 Líder</div></div>
         <div class="stat-card"><div class="value">${top.puntos}</div><div>Puntos</div></div>
         <div class="stat-card"><div class="value">${top.exactos}</div><div>🎯 Exactos</div></div>
-        <div class="stat-card"><div class="value">${totalPartidos}</div><div>Partidos Jugados</div></div>
+        <div class="stat-card"><div class="value">${totalPartidos}</div><div>Jugados</div></div>
       `;
     }
 
     async function renderPredicciones() {
       if (!currentUser || currentUser.isAdmin) {
-        document.getElementById('prediccionesList').innerHTML = '<div style="text-align:center;padding:20px">🔒 Inicia sesión para hacer tus predicciones</div>';
+        document.getElementById('prediccionesList').innerHTML = '<div style="text-align:center;padding:20px">🔒 Inicia sesión</div>';
         return;
       }
       const misPreds = await cargarPrediccionesEquipo(currentUser.id);
@@ -385,10 +377,10 @@
           const pred = misPreds[p.id] || {};
           html += `<div class="partido-item"><div class="partido-equipos"><span class="equipo-local">${p.local}</span><span class="vs">VS</span><span class="equipo-visita">${p.visita}</span></div><div style="font-size:0.7rem;color:#888;text-align:center">📅 ${p.fecha} · Grupo ${p.grupo}</div>`;
           if (res) {
-            const pts = calcularPuntosPrediccion(pred.local, pred.visita, res.local, res.visita);
-            html += `<div class="pred-resultado">🔒 Partido finalizado<br>Tu predicción: ${pred.local || '?'} - ${pred.visita || '?'}<br><span style="color:#6c9ebf">${pts !== null ? pts + ' puntos' : ''}</span></div>`;
+            const pts = calcularPuntos(pred.local, pred.visita, res.local, res.visita);
+            html += `<div class="pred-resultado">🔒 ${pred.local||'?'} - ${pred.visita||'?'}<br><span style="color:#6c9ebf">${pts} pts</span></div>`;
           } else if (pred.local !== undefined) {
-            html += `<div class="pred-resultado">✅ Tu predicción guardada: <strong>${pred.local} - ${pred.visita}</strong></div>`;
+            html += `<div class="pred-resultado">✅ ${pred.local} - ${pred.visita}</div>`;
           } else {
             html += `<div class="pred-inputs"><input type="number" id="predL_${p.id}" placeholder="0" min="0" max="20" onchange="guardarPrediccion(${p.id})"><span>-</span><input type="number" id="predV_${p.id}" placeholder="0" min="0" max="20" onchange="guardarPrediccion(${p.id})"></div>`;
           }
@@ -402,39 +394,34 @@
       if (!currentUser || currentUser.isAdmin) return;
       const local = document.getElementById(`predL_${partidoId}`).value;
       const visita = document.getElementById(`predV_${partidoId}`).value;
-      if (local === '' || visita === '') { mostrarToast('❌ Ingresa ambos marcadores', 'error'); return; }
+      if (local === '' || visita === '') { mostrarToast('❌ Ingresa ambos', 'error'); return; }
       await guardarPrediccionCloud(currentUser.id, partidoId, parseInt(local), parseInt(visita));
-      mostrarToast('✅ Predicción guardada');
+      mostrarToast('✅ Guardado');
       renderPredicciones();
       renderDashboard();
     }
 
     async function renderAdminEquipos() {
-      const equipos = equiposCache;
-      let html = `<div class="card"><div class="card-title">👥 Gestión de Equipos</div>`;
-      if (equipos.length === 0) {
-        html += '<p>Cargando equipos...</p>';
-      } else {
-        for (const eq of equipos) {
-          html += `<div class="equipo-row">
-            <input type="text" id="nombre_${eq.id}" value="${eq.nombre}" style="width:150px">
-            <input type="password" id="pin_${eq.id}" value="${eq.pin}" style="width:80px">
-            <span style="color:${eq.activo?'#6c9ebf':'#ff6b6b'}">${eq.activo?'✅ Activo':'❌ Inactivo'}</span>
-            <button class="btn btn-primary" onclick="guardarEquipo(${eq.id})">💾</button>
-            <button class="btn ${eq.activo?'btn-danger':'btn-success'}" onclick="toggleEquipo(${eq.id})">${eq.activo?'❌ Desactivar':'✅ Activar'}</button>
-          </div>`;
-        }
+      let html = `<div class="card"><div class="card-title">👥 Equipos</div>`;
+      for (const eq of equiposCache) {
+        html += `<div class="equipo-row">
+          <input type="text" id="nombre_${eq.id}" value="${eq.nombre}" style="width:150px">
+          <input type="password" id="pin_${eq.id}" value="${eq.pin}" style="width:80px">
+          <span>${eq.activo?'✅ Activo':'❌ Inactivo'}</span>
+          <button class="btn btn-primary" onclick="guardarEquipo(${eq.id})">💾</button>
+          <button class="btn ${eq.activo?'btn-danger':'btn-success'}" onclick="toggleEquipo(${eq.id})">${eq.activo?'❌':'✅'}</button>
+        </div>`;
       }
-      html += `<button class="btn btn-primary" style="margin-top:1rem" onclick="agregarEquipo()">+ Agregar Equipo</button></div>`;
+      html += `<button class="btn btn-primary" onclick="agregarEquipo()">+ Agregar</button></div>`;
       document.getElementById('adminEquipos').innerHTML = html;
     }
 
     async function renderAdminResultados() {
       const resultados = await cargarResultados();
-      let html = `<div class="card"><div class="card-title">⚽ Registrar Resultados Reales</div><div style="margin-bottom:1rem"><button class="btn btn-danger" onclick="borrarTodosResultados()">🗑️ Borrar TODOS los resultados</button></div>`;
+      let html = `<div class="card"><div class="card-title">⚽ Resultados</div><div style="margin-bottom:1rem"><button class="btn btn-danger" onclick="borrarTodosResultados()">🗑️ Borrar TODOS</button></div>`;
       for (const p of PARTIDOS) {
         const res = resultados[p.id] || {};
-        html += `<div class="partido-item"><div class="partido-equipos"><span class="equipo-local"><strong>${p.local}</strong></span><span class="vs">VS</span><span class="equipo-visita"><strong>${p.visita}</strong></span></div><div style="display:flex;justify-content:center;gap:0.5rem;margin-top:0.5rem;flex-wrap:wrap"><input type="number" id="resL_${p.id}" class="resultado-input" value="${res.local||''}" placeholder="0"><span>-</span><input type="number" id="resV_${p.id}" class="resultado-input" value="${res.visita||''}" placeholder="0"><button class="btn btn-primary" onclick="guardarResultado(${p.id})">💾 Guardar</button>${res.local!==undefined?`<button class="btn btn-danger" onclick="borrarResultado(${p.id})">🗑️</button>`:''}</div><div style="font-size:0.7rem;color:#888;text-align:center">📅 ${p.fecha} · Grupo ${p.grupo}</div></div>`;
+        html += `<div class="partido-item"><div><strong>${p.local} vs ${p.visita}</strong> (${p.fecha})</div><div style="display:flex;gap:0.5rem;margin-top:0.5rem"><input type="number" id="resL_${p.id}" value="${res.local||''}" style="width:50px"><span>-</span><input type="number" id="resV_${p.id}" value="${res.visita||''}" style="width:50px"><button class="btn btn-primary" onclick="guardarResultado(${p.id})">Guardar</button>${res.local!==undefined?`<button class="btn btn-danger" onclick="borrarResultado(${p.id})">🗑️</button>`:''}</div></div>`;
       }
       html += `</div>`;
       document.getElementById('adminResultados').innerHTML = html;
@@ -443,7 +430,7 @@
     async function guardarResultado(partidoId) {
       const local = document.getElementById(`resL_${partidoId}`).value;
       const visita = document.getElementById(`resV_${partidoId}`).value;
-      if (local === '' || visita === '') { mostrarToast('❌ Ingresa ambos marcadores', 'error'); return; }
+      if (local === '' || visita === '') { mostrarToast('❌ Ingresa ambos', 'error'); return; }
       await guardarResultadoCloud(partidoId, parseInt(local), parseInt(visita));
       mostrarToast('✅ Resultado guardado');
       renderAdminResultados();
@@ -453,15 +440,15 @@
 
     async function borrarResultado(partidoId) {
       await borrarResultadoCloud(partidoId);
-      mostrarToast('🗑️ Resultado eliminado');
+      mostrarToast('🗑️ Eliminado');
       renderAdminResultados();
       renderDashboard();
     }
 
     async function borrarTodosResultados() {
-      if (confirm('⚠️ ¿Estás seguro? Esto borrará TODOS los resultados.')) {
+      if (confirm('¿Borrar TODOS los resultados?')) {
         await borrarTodosResultadosCloud();
-        mostrarToast('🗑️ Todos los resultados eliminados');
+        mostrarToast('🗑️ Todos eliminados');
         renderAdminResultados();
         renderDashboard();
       }
@@ -482,7 +469,7 @@
       const equipo = equiposCache.find(e => e.id === id);
       if (equipo) {
         await guardarEquipoCloud(id, equipo.nombre, equipo.pin, !equipo.activo);
-        mostrarToast(equipo.activo ? '❌ Equipo desactivado' : '✅ Equipo activado');
+        mostrarToast(equipo.activo ? '❌ Desactivado' : '✅ Activado');
         await cargarEquipos();
         renderAdminEquipos();
         cargarEquiposLogin();
@@ -499,10 +486,10 @@
       cargarEquiposLogin();
     }
 
-    function renderAdminAdherencia() { document.getElementById('adminAdherencia').innerHTML = '<div class="card"><div class="card-title">📋 Adherencia</div><p>Función en desarrollo</p></div>'; }
-    function renderAdminBonos() { document.getElementById('adminBonos').innerHTML = '<div class="card"><div class="card-title">⭐ Bonos</div><p>Función en desarrollo</p></div>'; }
-    function renderAdminPenalizaciones() { document.getElementById('adminPenalizaciones').innerHTML = '<div class="card"><div class="card-title">🚫 Penalizaciones</div><p>Función en desarrollo</p></div>'; }
-    function renderAdminPrediccionesAdmin() { document.getElementById('adminPrediccionesAdmin').innerHTML = '<div class="card"><div class="card-title">👁️ Ver Predicciones</div><p>Función en desarrollo</p></div>'; }
+    function renderAdminAdherencia() { document.getElementById('adminAdherencia').innerHTML = '<div class="card"><div class="card-title">📋 Adherencia</div><p>Próximamente</p></div>'; }
+    function renderAdminBonos() { document.getElementById('adminBonos').innerHTML = '<div class="card"><div class="card-title">⭐ Bonos</div><p>Próximamente</p></div>'; }
+    function renderAdminPenalizaciones() { document.getElementById('adminPenalizaciones').innerHTML = '<div class="card"><div class="card-title">🚫 Penalizaciones</div><p>Próximamente</p></div>'; }
+    function renderAdminPrediccionesAdmin() { document.getElementById('adminPrediccionesAdmin').innerHTML = '<div class="card"><div class="card-title">👁️ Ver Predicciones</div><p>Próximamente</p></div>'; }
 
     function showPage(page) {
       currentPage = page;
@@ -515,31 +502,8 @@
     function showAdminTab(tab) {
       document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
-      if (tab === 'equipos') {
-        document.querySelector('.admin-tab[onclick*="equipos"]').classList.add('active');
-        document.getElementById('adminEquipos').classList.add('active');
-        renderAdminEquipos();
-      } else if (tab === 'resultados') {
-        document.querySelector('.admin-tab[onclick*="resultados"]').classList.add('active');
-        document.getElementById('adminResultados').classList.add('active');
-        renderAdminResultados();
-      } else if (tab === 'adherencia') {
-        document.querySelector('.admin-tab[onclick*="adherencia"]').classList.add('active');
-        document.getElementById('adminAdherencia').classList.add('active');
-        renderAdminAdherencia();
-      } else if (tab === 'bonos') {
-        document.querySelector('.admin-tab[onclick*="bonos"]').classList.add('active');
-        document.getElementById('adminBonos').classList.add('active');
-        renderAdminBonos();
-      } else if (tab === 'penalizaciones') {
-        document.querySelector('.admin-tab[onclick*="penalizaciones"]').classList.add('active');
-        document.getElementById('adminPenalizaciones').classList.add('active');
-        renderAdminPenalizaciones();
-      } else if (tab === 'prediccionesAdmin') {
-        document.querySelector('.admin-tab[onclick*="prediccionesAdmin"]').classList.add('active');
-        document.getElementById('adminPrediccionesAdmin').classList.add('active');
-        renderAdminPrediccionesAdmin();
-      }
+      const panels = { equipos: renderAdminEquipos, resultados: renderAdminResultados, adherencia: renderAdminAdherencia, bonos: renderAdminBonos, penalizaciones: renderAdminPenalizaciones, prediccionesAdmin: renderAdminPrediccionesAdmin };
+      if (panels[tab]) { panels[tab](); document.getElementById(`admin${tab.charAt(0).toUpperCase() + tab.slice(1)}`).classList.add('active'); }
     }
 
     async function doLogin() {
@@ -569,27 +533,17 @@
       actualizarMobileNav();
     }
 
-    function logout() { currentUser = null; document.getElementById('app').style.display = 'none'; document.getElementById('loginScreen').style.display = 'flex'; document.getElementById('loginPin').value = ''; document.getElementById('adminBtn').style.display = 'none'; }
+    function logout() { currentUser = null; document.getElementById('app').style.display = 'none'; document.getElementById('loginScreen').style.display = 'flex'; }
     function showAdminLogin() { document.getElementById('loginScreen').style.display = 'none'; document.getElementById('adminLoginScreen').style.display = 'flex'; }
     function hideAdminLogin() { document.getElementById('adminLoginScreen').style.display = 'none'; document.getElementById('loginScreen').style.display = 'flex'; }
-    function actualizarMobileNav() { const mobileNav = document.getElementById('mobileNav'); const pages = ['dashboard','predicciones']; if (currentUser?.isAdmin) pages.push('admin'); mobileNav.innerHTML = pages.map(p => `<button onclick="showPage('${p}')" class="${currentPage===p?'active':''}">${p==='dashboard'?'📊':p==='predicciones'?'🎯':'⚙️'}<br><span style="font-size:0.6rem">${p}</span></button>`).join(''); }
-    async function cargarEquiposLogin() { const select = document.getElementById('loginEquipo'); select.innerHTML = '<option value="">-- Selecciona tu equipo --</option>' + equiposCache.filter(e=>e.activo).map(e=>`<option value="${e.id}">${e.nombre}</option>`).join(''); }
-    function mostrarToast(mensaje, tipo='success') { const toast = document.createElement('div'); toast.className = `toast ${tipo==='error'?'error':''}`; toast.textContent = mensaje; document.body.appendChild(toast); setTimeout(()=>toast.remove(),3000); }
+    function actualizarMobileNav() { const mobileNav = document.getElementById('mobileNav'); const pages = ['dashboard','predicciones']; if (currentUser?.isAdmin) pages.push('admin'); mobileNav.innerHTML = pages.map(p => `<button onclick="showPage('${p}')" class="${currentPage===p?'active':''}">${p==='dashboard'?'📊':p==='predicciones'?'🎯':'⚙️'}<br>${p}</button>`).join(''); }
+    async function cargarEquiposLogin() { const select = document.getElementById('loginEquipo'); select.innerHTML = '<option value="">-- Selecciona --</option>' + equiposCache.filter(e=>e.activo).map(e=>`<option value="${e.id}">${e.nombre}</option>`).join(''); }
+    function mostrarToast(m, t='success') { const toast = document.createElement('div'); toast.className = `toast ${t==='error'?'error':''}`; toast.textContent = m; document.body.appendChild(toast); setTimeout(()=>toast.remove(),3000); }
 
-    window.guardarPrediccion = guardarPrediccion;
-    window.guardarResultado = guardarResultado;
-    window.borrarResultado = borrarResultado;
-    window.borrarTodosResultados = borrarTodosResultados;
-    window.guardarEquipo = guardarEquipo;
-    window.toggleEquipo = toggleEquipo;
-    window.agregarEquipo = agregarEquipo;
-    window.showPage = showPage;
-    window.showAdminTab = showAdminTab;
-    window.doLogin = doLogin;
-    window.doAdminLogin = doAdminLogin;
-    window.showAdminLogin = showAdminLogin;
-    window.hideAdminLogin = hideAdminLogin;
-    window.logout = logout;
+    window.guardarPrediccion = guardarPrediccion; window.guardarResultado = guardarResultado; window.borrarResultado = borrarResultado; window.borrarTodosResultados = borrarTodosResultados;
+    window.guardarEquipo = guardarEquipo; window.toggleEquipo = toggleEquipo; window.agregarEquipo = agregarEquipo;
+    window.showPage = showPage; window.showAdminTab = showAdminTab; window.doLogin = doLogin; window.doAdminLogin = doAdminLogin;
+    window.showAdminLogin = showAdminLogin; window.hideAdminLogin = hideAdminLogin; window.logout = logout;
 
     window.addEventListener('DOMContentLoaded', async () => {
       await cargarEquipos();
