@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>⚽ Mundialito GCA 2026 - Tiempo Real</title>
+  <title>⚽ Mundialito GCA 2026</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Segoe UI', sans-serif; background: #0a0a0a; color: #e0e0e0; }
@@ -109,7 +109,7 @@
   <div id="loginScreen" class="login-container" style="display: none;">
     <div class="login-card">
       <h1>⚽ MUNDIALITO GCA 2026</h1>
-      <select id="loginEquipo"><option value="">-- Selecciona tu equipo --</option></select>
+      <select id="loginEquipo"><option value="">Cargando equipos...</option></select>
       <input type="password" id="loginPin" placeholder="PIN de equipo" maxlength="4">
       <div id="loginError" class="error">❌ PIN incorrecto</div>
       <button onclick="doLogin()">INGRESAR</button>
@@ -172,7 +172,6 @@
   <div class="mobile-nav" id="mobileNav"></div>
 
   <script>
-    // ==================== SUPABASE CONFIG ====================
     const SUPABASE_URL = 'https://rbkopqwvzignqimcwmsi.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_81_d79c5c5bwZLs7MgwbgWg_1klwj_';
 
@@ -225,7 +224,7 @@
       const options = { method, headers };
       if (body && (method === 'POST' || method === 'PATCH')) options.body = JSON.stringify(body);
       const res = await fetch(url, options);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!res.ok) throw new Error(`Error ${res.status}`);
       if (method === 'DELETE') return true;
       return res.json();
     }
@@ -264,24 +263,11 @@
     async function guardarEquipoCloud(id, nombre, pin, activo) { try { await apiFetch(`equipos?id=eq.${id}`, 'PATCH', { nombre, pin, activo }); } catch(e) { console.error(e); } }
     async function agregarEquipoCloud(nombre, pin) { try { await apiFetch('equipos', 'POST', { nombre, pin, activo: true }); } catch(e) { console.error(e); } }
 
-    // ADHERENCIA
-    async function cargarAdherencia() {
-      try { const data = await apiFetch('adherencia'); const adh = {}; for (const a of data) { if (!adh[a.equipo_id]) adh[a.equipo_id] = {}; adh[a.equipo_id][a.fecha] = a.puntos; } return adh; } catch(e) { return {}; }
-    }
-    async function guardarAdherenciaCloud(equipoId, fecha, puntos) {
-      try {
-        const existentes = await apiFetch(`adherencia?equipo_id=eq.${equipoId}&fecha=eq.${fecha}`);
-        if (existentes.length > 0) { await apiFetch(`adherencia?equipo_id=eq.${equipoId}&fecha=eq.${fecha}`, 'PATCH', { puntos }); }
-        else { await apiFetch('adherencia', 'POST', { equipo_id: equipoId, fecha, puntos }); }
-      } catch(e) { console.error(e); }
-    }
-
-    // BONOS
+    async function cargarAdherencia() { try { const data = await apiFetch('adherencia'); const adh = {}; for (const a of data) { if (!adh[a.equipo_id]) adh[a.equipo_id] = {}; adh[a.equipo_id][a.fecha] = a.puntos; } return adh; } catch(e) { return {}; } }
+    async function guardarAdherenciaCloud(equipoId, fecha, puntos) { try { const existentes = await apiFetch(`adherencia?equipo_id=eq.${equipoId}&fecha=eq.${fecha}`); if (existentes.length > 0) { await apiFetch(`adherencia?equipo_id=eq.${equipoId}&fecha=eq.${fecha}`, 'PATCH', { puntos }); } else { await apiFetch('adherencia', 'POST', { equipo_id: equipoId, fecha, puntos }); } } catch(e) { console.error(e); } }
     async function cargarBonos() { try { return await apiFetch('bonos'); } catch(e) { return []; } }
     async function guardarBonoCloud(equipoId, puntos, descripcion) { try { await apiFetch('bonos', 'POST', { equipo_id: equipoId, puntos, descripcion, fecha: new Date().toLocaleDateString() }); } catch(e) { console.error(e); } }
     async function eliminarBonoCloud(id) { try { await apiFetch(`bonos?id=eq.${id}`, 'DELETE'); } catch(e) { console.error(e); } }
-
-    // PENALIZACIONES
     async function cargarPenalizaciones() { try { return await apiFetch('penalizaciones'); } catch(e) { return []; } }
     async function guardarPenalizacionCloud(equipoId, puntos, descripcion) { try { await apiFetch('penalizaciones', 'POST', { equipo_id: equipoId, puntos, descripcion, fecha: new Date().toLocaleDateString() }); } catch(e) { console.error(e); } }
     async function eliminarPenalizacionCloud(id) { try { await apiFetch(`penalizaciones?id=eq.${id}`, 'DELETE'); } catch(e) { console.error(e); } }
@@ -319,9 +305,9 @@
         const puntosBonos = bonos.filter(b => b.equipo_id === equipo.id).reduce((a,b) => a + b.puntos, 0);
         const puntosPen = penalizaciones.filter(p => p.equipo_id === equipo.id).reduce((a,b) => a + b.puntos, 0);
         const total = puntosPred + puntosAdh + puntosBonos + puntosPen;
-        ranking.push({ id: equipo.id, nombre: equipo.nombre, puntos: total, exactos, puntosPred, puntosAdh, puntosBonos, puntosPen });
+        ranking.push({ id: equipo.id, nombre: equipo.nombre, total, exactos, puntosPred, puntosAdh, puntosBonos, puntosPen });
       }
-      ranking.sort((a, b) => b.puntos - a.puntos || b.exactos - a.exactos);
+      ranking.sort((a, b) => b.total - a.total || b.exactos - a.exactos);
       return ranking;
     }
 
@@ -331,10 +317,10 @@
       let html = '<table><thead><tr><th>#</th><th>Equipo</th><th>Total</th><th>Pred</th><th>Adh</th><th>Bonus</th><th>Pen</th><th>🎯</th></tr></thead><tbody>';
       for (let i = 0; i < ranking.length; i++) {
         const eq = ranking[i];
-        html += `<tr><td>${i+1} ${i===0?'🏆':''}${i===1?'🥈':''}${i===2?'🥉':''}</td><td>${eq.nombre}</td><td class="rank-pts">${eq.puntos}</td><td>${eq.puntosPred}</td><td>${eq.puntosAdh}</td><td>${eq.puntosBonos}</td><td>${eq.puntosPen}</td><td>${eq.exactos}</td></tr>`;
+        html += `<tr><td class="rank-pos">${i+1} ${i===0?'🏆':''}${i===1?'🥈':''}${i===2?'🥉':''}</td><td><strong>${eq.nombre}</strong></td><td class="rank-pts">${eq.total}</td><td>${eq.puntosPred}</td><td>${eq.puntosAdh}</td><td>${eq.puntosBonos}</td><td>${eq.puntosPen}</td><td>${eq.exactos}</td></tr>`;
       }
-      if (ranking.length === 0) html += '<tr><td colspan="8">Sin datos. Agrega resultados desde Admin</td></tr>';
-      html += '</tbody><table>';
+      if (ranking.length === 0) html += '<tr><td colspan="8">Cargando equipos...</td></tr>';
+      html += '</tbody></table>';
       document.getElementById('rankingList').innerHTML = html;
 
       const proximos = PARTIDOS.filter(p => !resultados[p.id]).slice(0,5);
@@ -343,10 +329,10 @@
       const ultimos = PARTIDOS.filter(p => resultados[p.id]).slice(-5).reverse();
       document.getElementById('ultimosResultados').innerHTML = ultimos.map(p => `<div class="partido-item"><div class="partido-equipos"><span class="equipo-local">${p.local}</span><span class="vs">${resultados[p.id].local} - ${resultados[p.id].visita}</span><span class="equipo-visita">${p.visita}</span></div><div style="font-size:0.7rem;color:#888;text-align:center">📅 ${p.fecha}</div></div>`).join('') || '<div style="text-align:center;padding:20px">📋 Sin resultados</div>';
 
-      const top = ranking[0] || { nombre: '-', puntos: 0, exactos: 0 };
+      const top = ranking[0] || { nombre: '-', total: 0, exactos: 0 };
       document.getElementById('statsGrid').innerHTML = `
         <div class="stat-card"><div class="value">${top.nombre}</div><div>🏆 Líder</div></div>
-        <div class="stat-card"><div class="value">${top.puntos}</div><div>Puntos</div></div>
+        <div class="stat-card"><div class="value">${top.total}</div><div>Puntos</div></div>
         <div class="stat-card"><div class="value">${top.exactos}</div><div>🎯 Exactos</div></div>
         <div class="stat-card"><div class="value">${Object.keys(resultados).length}</div><div>Jugados</div></div>
       `;
@@ -388,12 +374,11 @@
       const visita = document.getElementById(`predV_${partidoId}`).value;
       if (local === '' || visita === '') { mostrarToast('❌ Ingresa ambos', 'error'); return; }
       await guardarPrediccionCloud(currentUser.id, partidoId, parseInt(local), parseInt(visita));
-      mostrarToast('✅ Guardado (todos lo ven)');
+      mostrarToast('✅ Guardado');
       renderPredicciones();
       renderDashboard();
     }
 
-    // ADMIN EQUIPOS
     async function renderAdminEquipos() {
       let html = `<div class="card"><div class="card-title">👥 Equipos</div>`;
       for (const eq of equiposCache) {
@@ -441,7 +426,6 @@
       cargarEquiposLogin();
     }
 
-    // ADMIN RESULTADOS
     async function renderAdminResultados() {
       const resultados = await cargarResultados();
       let html = `<div class="card"><div class="card-title">⚽ Resultados</div><div style="margin-bottom:1rem"><button class="btn btn-danger" onclick="borrarTodosResultados()">🗑️ Borrar TODOS</button></div>`;
@@ -480,7 +464,6 @@
       }
     }
 
-    // ADMIN ADHERENCIA
     async function renderAdminAdherencia() {
       const hoy = new Date().toISOString().split('T')[0];
       const fechas = [];
@@ -515,7 +498,6 @@
       renderDashboard();
     }
 
-    // ADMIN BONOS
     async function renderAdminBonos() {
       const bonos = await cargarBonos();
       let html = `<div class="card"><div class="card-title">⭐ Bonificaciones</div><div class="bono-row">
@@ -550,7 +532,6 @@
       renderDashboard();
     }
 
-    // ADMIN PENALIZACIONES
     async function renderAdminPenalizaciones() {
       const penalizaciones = await cargarPenalizaciones();
       let html = `<div class="card"><div class="card-title">🚫 Penalizaciones</div><div class="bono-row">
@@ -585,7 +566,6 @@
       renderDashboard();
     }
 
-    // ADMIN VER PREDICCIONES
     async function renderAdminPrediccionesAdmin() {
       let html = `<div class="card"><div class="card-title">👁️ Ver Predicciones</div>`;
       for (const eq of equiposCache) {
@@ -601,7 +581,6 @@
       document.getElementById('adminPrediccionesAdmin').innerHTML = html;
     }
 
-    // NAVEGACION
     function showPage(page) {
       currentPage = page;
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -651,7 +630,6 @@
     async function cargarEquiposLogin() { const select = document.getElementById('loginEquipo'); select.innerHTML = '<option value="">-- Selecciona --</option>' + equiposCache.filter(e=>e.activo).map(e=>`<option value="${e.id}">${e.nombre}</option>`).join(''); }
     function mostrarToast(m, t='success') { const toast = document.createElement('div'); toast.className = `toast ${t==='error'?'error':''}`; toast.textContent = m; document.body.appendChild(toast); setTimeout(()=>toast.remove(),3000); }
 
-    // GLOBALES
     window.guardarPrediccion = guardarPrediccion;
     window.guardarResultado = guardarResultado;
     window.borrarResultado = borrarResultado;
