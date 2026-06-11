@@ -659,656 +659,385 @@
 
   <script>
 // ==================== SUPABASE ====================
-const SUPABASE_URL = 'https://rbkopqwvzignqimcwmsi.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_81_d79sC5bWZls7MggwbWg_IklWjISl';
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const SUPABASE_URL =
+'https://rbkopqwvzignqimcwmsi.supabase.co';
 
-// ==================== PARTIDOS ====================
-const PARTIDOS = [
-  { id: 1, grupo: 'A', fecha: '11/06/2026', local: 'México', visita: 'Sudáfrica' },
-  { id: 2, grupo: 'A', fecha: '11/06/2026', local: 'Corea del Sur', visita: 'República Checa' },
-  { id: 3, grupo: 'A', fecha: '18/06/2026', local: 'República Checa', visita: 'Sudáfrica' },
-  { id: 4, grupo: 'A', fecha: '18/06/2026', local: 'México', visita: 'Corea del Sur' },
-  { id: 5, grupo: 'A', fecha: '24/06/2026', local: 'República Checa', visita: 'México' },
-  { id: 6, grupo: 'A', fecha: '24/06/2026', local: 'Sudáfrica', visita: 'Corea del Sur' },
-  { id: 7, grupo: 'B', fecha: '12/06/2026', local: 'Canadá', visita: 'Bosnia' },
-  { id: 8, grupo: 'B', fecha: '13/06/2026', local: 'Catar', visita: 'Suiza' },
-  { id: 9, grupo: 'B', fecha: '18/06/2026', local: 'Suiza', visita: 'Bosnia' },
-  { id: 10, grupo: 'B', fecha: '18/06/2026', local: 'Canadá', visita: 'Catar' },
-  { id: 11, grupo: 'B', fecha: '24/06/2026', local: 'Suiza', visita: 'Canadá' },
-  { id: 12, grupo: 'B', fecha: '24/06/2026', local: 'Bosnia', visita: 'Catar' },
-  { id: 13, grupo: 'C', fecha: '13/06/2026', local: 'Brasil', visita: 'Marruecos' },
-  { id: 14, grupo: 'C', fecha: '13/06/2026', local: 'Haití', visita: 'Escocia' },
-  { id: 15, grupo: 'C', fecha: '19/06/2026', local: 'Escocia', visita: 'Marruecos' },
-  { id: 16, grupo: 'C', fecha: '19/06/2026', local: 'Brasil', visita: 'Haití' },
-  { id: 17, grupo: 'C', fecha: '24/06/2026', local: 'Escocia', visita: 'Brasil' },
-  { id: 18, grupo: 'C', fecha: '24/06/2026', local: 'Marruecos', visita: 'Haití' },
-  { id: 19, grupo: 'D', fecha: '12/06/2026', local: 'Estados Unidos', visita: 'Paraguay' },
-  { id: 20, grupo: 'D', fecha: '14/06/2026', local: 'Australia', visita: 'Turquía' },
-  { id: 21, grupo: 'D', fecha: '19/06/2026', local: 'Estados Unidos', visita: 'Australia' },
-  { id: 22, grupo: 'D', fecha: '20/06/2026', local: 'Turquía', visita: 'Paraguay' },
-  { id: 23, grupo: 'D', fecha: '25/06/2026', local: 'Turquía', visita: 'Estados Unidos' },
-  { id: 24, grupo: 'D', fecha: '25/06/2026', local: 'Paraguay', visita: 'Australia' },
-  { id: 25, grupo: 'E', fecha: '14/06/2026', local: 'Alemania', visita: 'Curazao' },
-  { id: 26, grupo: 'E', fecha: '14/06/2026', local: 'Costa de Marfil', visita: 'Ecuador' },
-  { id: 27, grupo: 'E', fecha: '20/06/2026', local: 'Alemania', visita: 'Costa de Marfil' },
-  { id: 28, grupo: 'E', fecha: '20/06/2026', local: 'Ecuador', visita: 'Curazao' },
-  { id: 29, grupo: 'E', fecha: '25/06/2026', local: 'Curazao', visita: 'Costa de Marfil' },
-  { id: 30, grupo: 'E', fecha: '25/06/2026', local: 'Ecuador', visita: 'Alemania' },
-  { id: 31, grupo: 'F', fecha: '14/06/2026', local: 'Países Bajos', visita: 'Japón' },
-  { id: 32, grupo: 'F', fecha: '14/06/2026', local: 'Suecia', visita: 'Túnez' },
-  { id: 33, grupo: 'F', fecha: '20/06/2026', local: 'Países Bajos', visita: 'Suecia' },
-  { id: 34, grupo: 'F', fecha: '20/06/2026', local: 'Túnez', visita: 'Japón' },
-  { id: 35, grupo: 'F', fecha: '25/06/2026', local: 'Japón', visita: 'Suecia' },
-  { id: 36, grupo: 'F', fecha: '25/06/2026', local: 'Túnez', visita: 'Países Bajos' }
-];
+const SUPABASE_KEY =
+'sb_publishable_81_d79sC5bWZls7MggwbWg_IklWjISl';
 
-// ==================== CONFIGURACIÓN ====================
-const CONFIG = {
-  adminPass: 'admin2026',
-  ptsExacto: 5,
-  ptsGanador: 2,
-  ptsAdherencia: { todos: 5, uno: 3, dos: 1, mas: 0 },
-  ptsBonos: { adherenciaSemanal: 10, calidadSemanal: 10, productividadSemanal: 10, asistencia: 5 },
-  ptsPenalizaciones: { conducta: -5, inasistencia: -10, convivencia: -10 }
-};
+var db = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 
-// ==================== VARIABLES GLOBALES ====================
-let currentUser = null;
-let currentPage = 'dashboard';
-let equipos = [];
-let resultados = {};
-let predicciones = {};
-let adherencia = {};
-let bonos = [];
-let penalizaciones = [];
+async function probarSupabase() {
 
-// ==================== FUNCIONES DE SUPABASE ====================
-async function cargarEquipos() {
-  const { data, error } = await supabase.from('equipos').select('*');
-  if (error) { console.error('Error cargando equipos:', error); return; }
-  equipos = data || [];
-  cargarEquiposLogin();
-  if (currentUser && !currentUser.isAdmin) {
-    const userEquipo = equipos.find(e => e.id === currentUser.id);
-    if (userEquipo) currentUser.nombre = userEquipo.nombre;
-    document.getElementById('userBadge').textContent = `🟢 ${currentUser.nombre}`;
+  const { data, error } = await db
+    .from('equipos')
+    .select('*');
+
+  console.log('Equipos:', data);
+
+  if (error) {
+    console.error('Error:', error);
   }
-  if (currentPage === 'dashboard') renderDashboard();
-  if (currentPage === 'admin' && currentUser?.isAdmin && document.getElementById('adminEquipos').classList.contains('active')) renderAdminEquipos();
 }
 
-async function guardarEquipo(id, nombre, pin, activo) {
-  const { error } = await supabase.from('equipos').upsert({ id, nombre, pin, activo });
-  if (error) { console.error('Error guardando equipo:', error); mostrarToast('❌ Error al guardar equipo', 'error'); return false; }
-  await cargarEquipos();
-  mostrarToast('✅ Equipo guardado');
-  return true;
-}
+probarSupabase();
+    // ==================== PARTIDOS ====================
+    const PARTIDOS = [
+      { id: 1, grupo: 'A', fecha: '11/06/2026', local: 'México', visita: 'Sudáfrica' },
+      { id: 2, grupo: 'A', fecha: '11/06/2026', local: 'Corea del Sur', visita: 'República Checa' },
+      { id: 3, grupo: 'A', fecha: '18/06/2026', local: 'República Checa', visita: 'Sudáfrica' },
+      { id: 4, grupo: 'A', fecha: '18/06/2026', local: 'México', visita: 'Corea del Sur' },
+      { id: 5, grupo: 'A', fecha: '24/06/2026', local: 'República Checa', visita: 'México' },
+      { id: 6, grupo: 'A', fecha: '24/06/2026', local: 'Sudáfrica', visita: 'Corea del Sur' },
+      { id: 7, grupo: 'B', fecha: '12/06/2026', local: 'Canadá', visita: 'Bosnia' },
+      { id: 8, grupo: 'B', fecha: '13/06/2026', local: 'Catar', visita: 'Suiza' },
+      { id: 9, grupo: 'B', fecha: '18/06/2026', local: 'Suiza', visita: 'Bosnia' },
+      { id: 10, grupo: 'B', fecha: '18/06/2026', local: 'Canadá', visita: 'Catar' },
+      { id: 11, grupo: 'B', fecha: '24/06/2026', local: 'Suiza', visita: 'Canadá' },
+      { id: 12, grupo: 'B', fecha: '24/06/2026', local: 'Bosnia', visita: 'Catar' },
+      { id: 13, grupo: 'C', fecha: '13/06/2026', local: 'Brasil', visita: 'Marruecos' },
+      { id: 14, grupo: 'C', fecha: '13/06/2026', local: 'Haití', visita: 'Escocia' },
+      { id: 15, grupo: 'C', fecha: '19/06/2026', local: 'Escocia', visita: 'Marruecos' },
+      { id: 16, grupo: 'C', fecha: '19/06/2026', local: 'Brasil', visita: 'Haití' },
+      { id: 17, grupo: 'C', fecha: '24/06/2026', local: 'Escocia', visita: 'Brasil' },
+      { id: 18, grupo: 'C', fecha: '24/06/2026', local: 'Marruecos', visita: 'Haití' },
+      { id: 19, grupo: 'D', fecha: '12/06/2026', local: 'Estados Unidos', visita: 'Paraguay' },
+      { id: 20, grupo: 'D', fecha: '14/06/2026', local: 'Australia', visita: 'Turquía' },
+      { id: 21, grupo: 'D', fecha: '19/06/2026', local: 'Estados Unidos', visita: 'Australia' },
+      { id: 22, grupo: 'D', fecha: '20/06/2026', local: 'Turquía', visita: 'Paraguay' },
+      { id: 23, grupo: 'D', fecha: '25/06/2026', local: 'Turquía', visita: 'Estados Unidos' },
+      { id: 24, grupo: 'D', fecha: '25/06/2026', local: 'Paraguay', visita: 'Australia' },
+      { id: 25, grupo: 'E', fecha: '14/06/2026', local: 'Alemania', visita: 'Curazao' },
+      { id: 26, grupo: 'E', fecha: '14/06/2026', local: 'Costa de Marfil', visita: 'Ecuador' },
+      { id: 27, grupo: 'E', fecha: '20/06/2026', local: 'Alemania', visita: 'Costa de Marfil' },
+      { id: 28, grupo: 'E', fecha: '20/06/2026', local: 'Ecuador', visita: 'Curazao' },
+      { id: 29, grupo: 'E', fecha: '25/06/2026', local: 'Curazao', visita: 'Costa de Marfil' },
+      { id: 30, grupo: 'E', fecha: '25/06/2026', local: 'Ecuador', visita: 'Alemania' },
+      { id: 31, grupo: 'F', fecha: '14/06/2026', local: 'Países Bajos', visita: 'Japón' },
+      { id: 32, grupo: 'F', fecha: '14/06/2026', local: 'Suecia', visita: 'Túnez' },
+      { id: 33, grupo: 'F', fecha: '20/06/2026', local: 'Países Bajos', visita: 'Suecia' },
+      { id: 34, grupo: 'F', fecha: '20/06/2026', local: 'Túnez', visita: 'Japón' },
+      { id: 35, grupo: 'F', fecha: '25/06/2026', local: 'Japón', visita: 'Suecia' },
+      { id: 36, grupo: 'F', fecha: '25/06/2026', local: 'Túnez', visita: 'Países Bajos' }
+    ];
 
-async function agregarEquipoSupabase(nombre, pin, activo) {
-  const { data, error } = await supabase.from('equipos').insert([{ nombre, pin, activo }]).select();
-  if (error) { console.error('Error agregando equipo:', error); mostrarToast('❌ Error al agregar equipo', 'error'); return null; }
-  await cargarEquipos();
-  mostrarToast('✅ Equipo agregado');
-  return data?.[0];
-}
+    // ==================== DATOS ====================
+    let equipos = [
+      { id: 1, nombre: 'Equipo 1', pin: '1111', activo: true },
+      { id: 2, nombre: 'Equipo 2', pin: '2222', activo: true },
+      { id: 3, nombre: 'Equipo 3', pin: '3333', activo: true },
+      { id: 4, nombre: 'Equipo 4', pin: '4444', activo: true },
+      { id: 5, nombre: 'Equipo 5', pin: '5555', activo: true },
+      { id: 6, nombre: 'Equipo 6', pin: '6666', activo: true },
+      { id: 7, nombre: 'Equipo 7', pin: '7777', activo: true },
+      { id: 8, nombre: 'Equipo 8', pin: '8888', activo: true },
+      { id: 9, nombre: 'Equipo 9', pin: '9999', activo: true },
+      { id: 10, nombre: 'Equipo 10', pin: '0000', activo: true }
+    ];
 
-async function cargarResultados() {
-  const { data, error } = await supabase.from('resultados').select('*');
-  if (error) { console.error('Error cargando resultados:', error); return; }
-  resultados = {};
-  (data || []).forEach(r => { resultados[r.partido_id] = { local: r.local, visita: r.visita }; });
-  if (currentPage === 'dashboard') renderDashboard();
-  if (currentPage === 'predicciones') renderPredicciones();
-  if (currentPage === 'admin' && currentUser?.isAdmin && document.getElementById('adminResultados').classList.contains('active')) renderAdminResultados();
-}
+    let resultados = {};
+    let predicciones = {};
+    let adherencia = {};
+    let bonos = [];
+    let penalizaciones = [];
 
-async function guardarResultado(partidoId, local, visita) {
-  const { error } = await supabase.from('resultados').upsert({ partido_id: partidoId, local, visita });
-  if (error) { console.error('Error guardando resultado:', error); mostrarToast('❌ Error al guardar resultado', 'error'); return false; }
-  await cargarResultados();
-  mostrarToast('✅ Resultado guardado');
-  return true;
-}
+    const CONFIG = {
+      adminPass: 'admin2026',
+      ptsExacto: 5,
+      ptsGanador: 2,
+      ptsAdherencia: { todos: 5, uno: 3, dos: 1, mas: 0 },
+      ptsBonos: { adherenciaSemanal: 10, calidadSemanal: 10, productividadSemanal: 10, asistencia: 5 },
+      ptsPenalizaciones: { conducta: -5, inasistencia: -10, convivencia: -10 }
+    };
 
-async function borrarResultado(partidoId) {
-  const { error } = await supabase.from('resultados').delete().eq('partido_id', partidoId);
-  if (error) { console.error('Error borrando resultado:', error); mostrarToast('❌ Error al borrar resultado', 'error'); return false; }
-  await cargarResultados();
-  mostrarToast('🗑️ Resultado eliminado');
-  return true;
-}
+    let currentUser = null;
+    let currentPage = 'dashboard';
 
-async function cargarPredicciones() {
-  const { data, error } = await supabase.from('predicciones').select('*');
-  if (error) { console.error('Error cargando predicciones:', error); return; }
-  predicciones = {};
-  (data || []).forEach(p => {
-    if (!predicciones[p.equipo_id]) predicciones[p.equipo_id] = {};
-    predicciones[p.equipo_id][p.partido_id] = { local: p.local, visita: p.visita };
-  });
-  if (currentPage === 'dashboard') renderDashboard();
-  if (currentPage === 'predicciones') renderPredicciones();
-  if (currentPage === 'admin' && currentUser?.isAdmin && document.getElementById('adminPrediccionesAdmin').classList.contains('active')) renderAdminPredicciones();
-}
+    function saveData() {
+      localStorage.setItem('gca_equipos', JSON.stringify(equipos));
+      localStorage.setItem('gca_resultados', JSON.stringify(resultados));
+      localStorage.setItem('gca_predicciones', JSON.stringify(predicciones));
+      localStorage.setItem('gca_adherencia', JSON.stringify(adherencia));
+      localStorage.setItem('gca_bonos', JSON.stringify(bonos));
+      localStorage.setItem('gca_penalizaciones', JSON.stringify(penalizaciones));
+    }
 
-async function guardarPrediccion(equipoId, partidoId, local, visita) {
-  const { error } = await supabase.from('predicciones').upsert({ equipo_id: equipoId, partido_id: partidoId, local, visita });
-  if (error) { console.error('Error guardando predicción:', error); mostrarToast('❌ Error al guardar predicción', 'error'); return false; }
-  await cargarPredicciones();
-  mostrarToast('✅ Predicción guardada');
-  return true;
-}
+    function loadData() {
+      const savedEquipos = localStorage.getItem('gca_equipos');
+      const savedResultados = localStorage.getItem('gca_resultados');
+      const savedPredicciones = localStorage.getItem('gca_predicciones');
+      const savedAdherencia = localStorage.getItem('gca_adherencia');
+      const savedBonos = localStorage.getItem('gca_bonos');
+      const savedPenalizaciones = localStorage.getItem('gca_penalizaciones');
+      
+      if (savedEquipos) equipos = JSON.parse(savedEquipos);
+      if (savedResultados) resultados = JSON.parse(savedResultados);
+      if (savedPredicciones) predicciones = JSON.parse(savedPredicciones);
+      if (savedAdherencia) adherencia = JSON.parse(savedAdherencia);
+      if (savedBonos) bonos = JSON.parse(savedBonos);
+      if (savedPenalizaciones) penalizaciones = JSON.parse(savedPenalizaciones);
+    }
 
-async function borrarPrediccionesEquipoSupabase(equipoId) {
-  const { error } = await supabase.from('predicciones').delete().eq('equipo_id', equipoId);
-  if (error) { console.error('Error borrando predicciones:', error); mostrarToast('❌ Error al borrar predicciones', 'error'); return false; }
-  await cargarPredicciones();
-  mostrarToast('🗑️ Predicciones eliminadas');
-  return true;
-}
+    function calcularPuntosPrediccion(predLocal, predVisit, resLocal, resVisit) {
+      if (resLocal === undefined || resVisit === undefined) return null;
+      if (predLocal === resLocal && predVisit === resVisit) return CONFIG.ptsExacto;
+      const predGanador = predLocal > predVisit ? 'L' : (predLocal < predVisit ? 'V' : 'E');
+      const resGanador = resLocal > resVisit ? 'L' : (resLocal < resVisit ? 'V' : 'E');
+      if (predGanador === resGanador) return CONFIG.ptsGanador;
+      return 0;
+    }
 
-async function cargarBonos() {
-  const { data, error } = await supabase.from('bonos').select('*');
-  if (error) { console.error('Error cargando bonos:', error); return; }
-  bonos = data || [];
-  if (currentPage === 'dashboard') renderDashboard();
-  if (currentPage === 'admin' && currentUser?.isAdmin && document.getElementById('adminBonos').classList.contains('active')) renderAdminBonos();
-}
+    function calcularTotalPuntos() {
+      const ranking = [];
+      for (const equipo of equipos) {
+        if (!equipo.activo) continue;
+        let puntosPrediccion = 0, exactos = 0;
+        const predsEquipo = predicciones[equipo.id] || {};
+        for (const partido of PARTIDOS) {
+          const resultado = resultados[partido.id];
+          const prediccion = predsEquipo[partido.id];
+          if (resultado && prediccion && prediccion.local !== undefined && prediccion.visita !== undefined) {
+            const pts = calcularPuntosPrediccion(prediccion.local, prediccion.visita, resultado.local, resultado.visita);
+            if (pts !== null) {
+              puntosPrediccion += pts;
+              if (pts === CONFIG.ptsExacto) exactos++;
+            }
+          }
+        }
+        let puntosAdherencia = 0;
+        const adhEquipo = adherencia[equipo.id] || {};
+        for (const fecha in adhEquipo) puntosAdherencia += adhEquipo[fecha];
+        let puntosBonos = 0;
+        for (const bono of bonos) if (bono.equipoId === equipo.id) puntosBonos += bono.puntos;
+        let puntosPenalizaciones = 0;
+        for (const penal of penalizaciones) if (penal.equipoId === equipo.id) puntosPenalizaciones += penal.puntos;
+        const total = puntosPrediccion + puntosAdherencia + puntosBonos + puntosPenalizaciones;
+        ranking.push({ id: equipo.id, nombre: equipo.nombre, puntosPrediccion, puntosAdherencia, puntosBonos, puntosPenalizaciones, total, exactos });
+      }
+      ranking.sort((a, b) => b.total - a.total || b.exactos - a.exactos);
+      return ranking;
+    }
 
-async function guardarBono(equipoId, puntos, descripcion) {
-  const { error } = await supabase.from('bonos').insert([{ equipo_id: equipoId, puntos, descripcion, fecha: new Date().toLocaleDateString() }]);
-  if (error) { console.error('Error guardando bono:', error); mostrarToast('❌ Error al guardar bono', 'error'); return false; }
-  await cargarBonos();
-  mostrarToast(`⭐ Bono agregado: +${puntos} puntos`);
-  return true;
-}
+    function renderDashboard() {
+      const ranking = calcularTotalPuntos();
+      const rankingHTML = `<table><thead><tr><th>#</th><th>Equipo</th><th>Total</th><th>Pred</th><th>Adh</th><th>Bonus</th><th>Pen</th><th>🎯</th></tr></thead><tbody>${ranking.map((eq, i) => `<tr><td>${i+1} ${i===0?'🏆':''}${i===1?'🥈':''}${i===2?'🥉':''}</td><td>${eq.nombre}</td><td style="color:#c0c0c0;font-weight:bold">${eq.total}</td><td style="color:#6c9ebf">${eq.puntosPrediccion}</td><td style="color:#6c9ebf">${eq.puntosAdherencia}</td><td style="color:#c0c0c0">${eq.puntosBonos}</td><td style="color:#ff6b6b">${eq.puntosPenalizaciones}</td><td>${eq.exactos}</td></tr>`).join('')}</tbody></table>`;
+      document.getElementById('rankingList').innerHTML = rankingHTML;
+      const proximos = PARTIDOS.filter(p => !resultados[p.id]).slice(0, 5);
+      document.getElementById('proximosPartidos').innerHTML = proximos.map(p => `<div class="partido-item"><div class="partido-equipos"><span class="equipo-local">${p.local}</span><span class="vs">VS</span><span class="equipo-visita">${p.visita}</span></div><div style="font-size:0.7rem;color:#888;text-align:center;margin-top:5px">📅 ${p.fecha} · Grupo ${p.grupo}</div></div>`).join('') || '<div style="text-align:center;padding:20px">✅ ¡Todos los partidos jugados!</div>';
+      const ultimos = PARTIDOS.filter(p => resultados[p.id]).slice(-5).reverse();
+      document.getElementById('ultimosResultados').innerHTML = ultimos.map(p => `<div class="partido-item"><div class="partido-equipos"><span class="equipo-local">${p.local}</span><span class="vs">${resultados[p.id].local} - ${resultados[p.id].visita}</span><span class="equipo-visita">${p.visita}</span></div><div style="font-size:0.7rem;color:#888;text-align:center;margin-top:5px">📅 ${p.fecha}</div></div>`).join('') || '<div style="text-align:center;padding:20px">📋 Sin resultados aún</div>';
+      const top = ranking[0] || { nombre: '-', total: 0, exactos: 0 };
+      document.getElementById('statsGrid').innerHTML = `<div class="stat-card"><div class="value">${top.nombre}</div><div>🏆 Líder</div></div><div class="stat-card"><div class="value">${top.total}</div><div>Puntos Totales</div></div><div class="stat-card"><div class="value">${top.exactos}</div><div>🎯 Exactos</div></div><div class="stat-card"><div class="value">${Object.keys(resultados).length}</div><div>Partidos Jugados</div></div>`;
+    }
 
-async function eliminarBono(index) {
-  const bono = bonos[index];
-  if (!bono) return;
-  const { error } = await supabase.from('bonos').delete().eq('id', bono.id);
-  if (error) { console.error('Error eliminando bono:', error); mostrarToast('❌ Error al eliminar bono', 'error'); return false; }
-  await cargarBonos();
-  mostrarToast('🗑️ Bono eliminado');
-  return true;
-}
-
-async function cargarPenalizaciones() {
-  const { data, error } = await supabase.from('penalizaciones').select('*');
-  if (error) { console.error('Error cargando penalizaciones:', error); return; }
-  penalizaciones = data || [];
-  if (currentPage === 'dashboard') renderDashboard();
-  if (currentPage === 'admin' && currentUser?.isAdmin && document.getElementById('adminPenalizaciones').classList.contains('active')) renderAdminPenalizaciones();
-}
-
-async function guardarPenalizacion(equipoId, puntos, descripcion) {
-  const { error } = await supabase.from('penalizaciones').insert([{ equipo_id: equipoId, puntos, descripcion, fecha: new Date().toLocaleDateString() }]);
-  if (error) { console.error('Error guardando penalización:', error); mostrarToast('❌ Error al guardar penalización', 'error'); return false; }
-  await cargarPenalizaciones();
-  mostrarToast(`🚫 Penalización aplicada: ${puntos} puntos`);
-  return true;
-}
-
-async function eliminarPenalizacion(index) {
-  const penal = penalizaciones[index];
-  if (!penal) return;
-  const { error } = await supabase.from('penalizaciones').delete().eq('id', penal.id);
-  if (error) { console.error('Error eliminando penalización:', error); mostrarToast('❌ Error al eliminar penalización', 'error'); return false; }
-  await cargarPenalizaciones();
-  mostrarToast('🗑️ Penalización eliminada');
-  return true;
-}
-
-async function cargarAdherencia() {
-  const { data, error } = await supabase.from('adherencia').select('*');
-  if (error) { console.error('Error cargando adherencia:', error); return; }
-  adherencia = {};
-  (data || []).forEach(a => {
-    if (!adherencia[a.equipo_id]) adherencia[a.equipo_id] = {};
-    adherencia[a.equipo_id][a.fecha] = a.puntos;
-  });
-  if (currentPage === 'dashboard') renderDashboard();
-  if (currentPage === 'admin' && currentUser?.isAdmin && document.getElementById('adminAdherencia').classList.contains('active')) renderAdminAdherencia();
-}
-
-async function guardarAdherencia(equipoId, fecha, puntos) {
-  const { error } = await supabase.from('adherencia').upsert({ equipo_id: equipoId, fecha, puntos });
-  if (error) { console.error('Error guardando adherencia:', error); mostrarToast('❌ Error al guardar adherencia', 'error'); return false; }
-  await cargarAdherencia();
-  mostrarToast(`✅ Adherencia registrada: +${puntos} puntos`);
-  return true;
-}
-
-// ==================== SUSCRIPCIONES REALTIME ====================
-function setupRealtimeSubscriptions() {
-  supabase.channel('public-changes')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'equipos' }, () => cargarEquipos())
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'resultados' }, () => cargarResultados())
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'predicciones' }, () => cargarPredicciones())
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'bonos' }, () => cargarBonos())
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'penalizaciones' }, () => cargarPenalizaciones())
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'adherencia' }, () => cargarAdherencia())
-    .subscribe();
-}
-
-// ==================== LÓGICA DEL NEGOCIO ====================
-function calcularPuntosPrediccion(predLocal, predVisit, resLocal, resVisit) {
-  if (resLocal === undefined || resVisit === undefined) return null;
-  if (predLocal === resLocal && predVisit === resVisit) return CONFIG.ptsExacto;
-  const predGanador = predLocal > predVisit ? 'L' : (predLocal < predVisit ? 'V' : 'E');
-  const resGanador = resLocal > resVisit ? 'L' : (resLocal < resVisit ? 'V' : 'E');
-  if (predGanador === resGanador) return CONFIG.ptsGanador;
-  return 0;
-}
-
-function calcularTotalPuntos() {
-  const ranking = [];
-  for (const equipo of equipos) {
-    if (!equipo.activo) continue;
-    let puntosPrediccion = 0, exactos = 0;
-    const predsEquipo = predicciones[equipo.id] || {};
-    for (const partido of PARTIDOS) {
-      const resultado = resultados[partido.id];
-      const prediccion = predsEquipo[partido.id];
-      if (resultado && prediccion && prediccion.local !== undefined && prediccion.visita !== undefined) {
-        const pts = calcularPuntosPrediccion(prediccion.local, prediccion.visita, resultado.local, resultado.visita);
-        if (pts !== null) {
-          puntosPrediccion += pts;
-          if (pts === CONFIG.ptsExacto) exactos++;
+    function renderPredicciones() {
+      if (!currentUser || currentUser.isAdmin) {
+        document.getElementById('prediccionesList').innerHTML = '<div style="text-align:center;padding:20px">🔒 Inicia sesión para hacer tus predicciones</div>';
+        return;
+      }
+      const misPreds = predicciones[currentUser.id] || {};
+      const grupos = {};
+      for (const p of PARTIDOS) { if (!grupos[p.grupo]) grupos[p.grupo] = []; grupos[p.grupo].push(p); }
+      let html = '';
+      for (const grupo of Object.keys(grupos).sort()) {
+        html += `<div class="grupo-titulo">🏳️ Grupo ${grupo}</div>`;
+        for (const p of grupos[grupo]) {
+          const res = resultados[p.id];
+          const pred = misPreds[p.id] || {};
+          html += `<div class="partido-item"><div class="partido-equipos"><span class="equipo-local">${p.local}</span><span class="vs">VS</span><span class="equipo-visita">${p.visita}</span></div><div style="font-size:0.7rem;color:#888;text-align:center;margin:5px 0">📅 ${p.fecha} · Grupo ${p.grupo}</div>`;
+          if (res) {
+            const pts = calcularPuntosPrediccion(pred.local, pred.visita, res.local, res.visita);
+            html += `<div class="pred-resultado">🔒 Partido finalizado<br>Tu predicción: ${pred.local !== undefined ? pred.local : '?'} - ${pred.visita !== undefined ? pred.visita : '?'}<br><span style="color: ${pts > 0 ? '#6c9ebf' : '#888'}">${pts !== null ? pts + ' puntos' : ''}</span></div>`;
+          } else if (pred.local !== undefined && pred.visita !== undefined) {
+            html += `<div class="pred-resultado">✅ Tu predicción guardada: <strong>${pred.local} - ${pred.visita}</strong></div>`;
+          } else {
+            html += `<div class="pred-inputs"><input type="number" id="predL_${p.id}" value="" placeholder="0" min="0" max="20" onchange="guardarPrediccion(${p.id})"><span>-</span><input type="number" id="predV_${p.id}" value="" placeholder="0" min="0" max="20" onchange="guardarPrediccion(${p.id})"></div>`;
+          }
+          html += `</div>`;
         }
       }
+      document.getElementById('prediccionesList').innerHTML = html;
     }
-    let puntosAdherencia = 0;
-    const adhEquipo = adherencia[equipo.id] || {};
-    for (const fecha in adhEquipo) puntosAdherencia += adhEquipo[fecha];
-    let puntosBonos = 0;
-    for (const bono of bonos) if (bono.equipo_id === equipo.id) puntosBonos += bono.puntos;
-    let puntosPenalizaciones = 0;
-    for (const penal of penalizaciones) if (penal.equipo_id === equipo.id) puntosPenalizaciones += penal.puntos;
-    const total = puntosPrediccion + puntosAdherencia + puntosBonos + puntosPenalizaciones;
-    ranking.push({ id: equipo.id, nombre: equipo.nombre, puntosPrediccion, puntosAdherencia, puntosBonos, puntosPenalizaciones, total, exactos });
-  }
-  ranking.sort((a, b) => b.total - a.total || b.exactos - a.exactos);
-  return ranking;
-}
 
-function renderDashboard() {
-  const ranking = calcularTotalPuntos();
-  const rankingHTML = `<table><thead><tr><th>#</th><th>Equipo</th><th>Total</th><th>Pred</th><th>Adh</th><th>Bonus</th><th>Pen</th><th>🎯</th></tr></thead><tbody>${ranking.map((eq, i) => `<tr><td>${i+1} ${i===0?'🏆':''}${i===1?'🥈':''}${i===2?'🥉':''}</td><td>${eq.nombre}</td><td style="color:#c0c0c0;font-weight:bold">${eq.total}</td><td style="color:#6c9ebf">${eq.puntosPrediccion}</td><td style="color:#6c9ebf">${eq.puntosAdherencia}</td><td style="color:#c0c0c0">${eq.puntosBonos}</td><td style="color:#ff6b6b">${eq.puntosPenalizaciones}</td><td>${eq.exactos}</td></tr>`).join('')}</tbody></table>`;
-  document.getElementById('rankingList').innerHTML = rankingHTML;
-  const proximos = PARTIDOS.filter(p => !resultados[p.id]).slice(0, 5);
-  document.getElementById('proximosPartidos').innerHTML = proximos.map(p => `<div class="partido-item"><div class="partido-equipos"><span class="equipo-local">${p.local}</span><span class="vs">VS</span><span class="equipo-visita">${p.visita}</span></div><div style="font-size:0.7rem;color:#888;text-align:center;margin-top:5px">📅 ${p.fecha} · Grupo ${p.grupo}</div></div>`).join('') || '<div style="text-align:center;padding:20px">✅ ¡Todos los partidos jugados!</div>';
-  const ultimos = PARTIDOS.filter(p => resultados[p.id]).slice(-5).reverse();
-  document.getElementById('ultimosResultados').innerHTML = ultimos.map(p => `<div class="partido-item"><div class="partido-equipos"><span class="equipo-local">${p.local}</span><span class="vs">${resultados[p.id].local} - ${resultados[p.id].visita}</span><span class="equipo-visita">${p.visita}</span></div><div style="font-size:0.7rem;color:#888;text-align:center;margin-top:5px">📅 ${p.fecha}</div></div>`).join('') || '<div style="text-align:center;padding:20px">📋 Sin resultados aún</div>';
-  const top = ranking[0] || { nombre: '-', total: 0, exactos: 0 };
-  document.getElementById('statsGrid').innerHTML = `<div class="stat-card"><div class="value">${top.nombre}</div><div>🏆 Líder</div></div><div class="stat-card"><div class="value">${top.total}</div><div>Puntos Totales</div></div><div class="stat-card"><div class="value">${top.exactos}</div><div>🎯 Exactos</div></div><div class="stat-card"><div class="value">${Object.keys(resultados).length}</div><div>Partidos Jugados</div></div>`;
-}
-
-function renderPredicciones() {
-  if (!currentUser || currentUser.isAdmin) {
-    document.getElementById('prediccionesList').innerHTML = '<div style="text-align:center;padding:20px">🔒 Inicia sesión para hacer tus predicciones</div>';
-    return;
-  }
-  const misPreds = predicciones[currentUser.id] || {};
-  const grupos = {};
-  for (const p of PARTIDOS) { if (!grupos[p.grupo]) grupos[p.grupo] = []; grupos[p.grupo].push(p); }
-  let html = '';
-  for (const grupo of Object.keys(grupos).sort()) {
-    html += `<div class="grupo-titulo">🏳️ Grupo ${grupo}</div>`;
-    for (const p of grupos[grupo]) {
-      const res = resultados[p.id];
-      const pred = misPreds[p.id] || {};
-      html += `<div class="partido-item"><div class="partido-equipos"><span class="equipo-local">${p.local}</span><span class="vs">VS</span><span class="equipo-visita">${p.visita}</span></div><div style="font-size:0.7rem;color:#888;text-align:center;margin:5px 0">📅 ${p.fecha} · Grupo ${p.grupo}</div>`;
-      if (res) {
-        const pts = calcularPuntosPrediccion(pred.local, pred.visita, res.local, res.visita);
-        html += `<div class="pred-resultado">🔒 Partido finalizado<br>Tu predicción: ${pred.local !== undefined ? pred.local : '?'} - ${pred.visita !== undefined ? pred.visita : '?'}<br><span style="color: ${pts > 0 ? '#6c9ebf' : '#888'}">${pts !== null ? pts + ' puntos' : ''}</span></div>`;
-      } else if (pred.local !== undefined && pred.visita !== undefined) {
-        html += `<div class="pred-resultado">✅ Tu predicción guardada: <strong>${pred.local} - ${pred.visita}</strong></div>`;
-      } else {
-        html += `<div class="pred-inputs"><input type="number" id="predL_${p.id}" value="" placeholder="0" min="0" max="20" onchange="guardarPrediccionHandler(${p.id})"><span>-</span><input type="number" id="predV_${p.id}" value="" placeholder="0" min="0" max="20" onchange="guardarPrediccionHandler(${p.id})"></div>`;
+    function guardarPrediccion(partidoId) {
+      if (!currentUser || currentUser.isAdmin) return;
+      const misPreds = predicciones[currentUser.id] || {};
+      if (misPreds[partidoId] && misPreds[partidoId].local !== undefined) {
+        mostrarToast('❌ No puedes modificar una predicción ya guardada', 'error');
+        renderPredicciones();
+        return;
       }
-      html += `</div>`;
+      const local = document.getElementById(`predL_${partidoId}`).value;
+      const visita = document.getElementById(`predV_${partidoId}`).value;
+      if (local === '' || visita === '') { mostrarToast('❌ Ingresa ambos marcadores', 'error'); return; }
+      if (!predicciones[currentUser.id]) predicciones[currentUser.id] = {};
+      predicciones[currentUser.id][partidoId] = { local: parseInt(local), visita: parseInt(visita) };
+      saveData();
+      mostrarToast('✅ Predicción guardada (no se puede modificar después)');
+      renderPredicciones();
     }
-  }
-  document.getElementById('prediccionesList').innerHTML = html;
-}
 
-async function guardarPrediccionHandler(partidoId) {
-  if (!currentUser || currentUser.isAdmin) return;
-  const misPreds = predicciones[currentUser.id] || {};
-  if (misPreds[partidoId] && misPreds[partidoId].local !== undefined) {
-    mostrarToast('❌ No puedes modificar una predicción ya guardada', 'error');
-    renderPredicciones();
-    return;
-  }
-  const local = document.getElementById(`predL_${partidoId}`).value;
-  const visita = document.getElementById(`predV_${partidoId}`).value;
-  if (local === '' || visita === '') { mostrarToast('❌ Ingresa ambos marcadores', 'error'); return; }
-  await guardarPrediccion(currentUser.id, partidoId, parseInt(local), parseInt(visita));
-  renderPredicciones();
-}
-
-async function renderAdminEquipos() {
-  const html = `<div class="card"><div class="card-title">👥 Gestión de Equipos</div>${equipos.map(eq => `<div class="equipo-row"><input type="text" id="nombre_${eq.id}" value="${eq.nombre}" style="width:150px"><input type="password" id="pin_${eq.id}" value="${eq.pin}" style="width:80px"><span style="color:${eq.activo?'#6c9ebf':'#ff6b6b'}">${eq.activo?'✅ Activo':'❌ Inactivo'}</span><button class="btn btn-primary" onclick="guardarEquipoHandler(${eq.id})">💾</button><button class="btn ${eq.activo?'btn-danger':'btn-success'}" onclick="toggleEquipoHandler(${eq.id})">${eq.activo?'❌':'✅'}</button></div>`).join('')}<button class="btn btn-primary" style="margin-top:1rem" onclick="agregarEquipoHandler()">+ Agregar Equipo</button></div>`;
-  document.getElementById('adminEquipos').innerHTML = html;
-}
-
-async function guardarEquipoHandler(id) {
-  const nombre = document.getElementById(`nombre_${id}`).value;
-  const pin = document.getElementById(`pin_${id}`).value;
-  await guardarEquipo(id, nombre, pin, equipos.find(e => e.id === id)?.activo);
-  renderAdminEquipos();
-}
-
-async function toggleEquipoHandler(id) {
-  const eq = equipos.find(e => e.id === id);
-  if (eq) await guardarEquipo(id, eq.nombre, eq.pin, !eq.activo);
-  renderAdminEquipos();
-}
-
-async function agregarEquipoHandler() {
-  const newId = Math.max(...equipos.map(e => e.id), 0) + 1;
-  await agregarEquipoSupabase(`Equipo ${newId}`, String(newId).padStart(4, '0'), true);
-  renderAdminEquipos();
-}
-
-function renderAdminResultados() {
-  let html = `<div class="card"><div class="card-title">⚽ Registrar Resultados Reales</div><div style="margin-bottom:1rem"><button class="btn btn-danger" onclick="borrarTodosResultadosHandler()">🗑️ Borrar TODOS los resultados</button></div>`;
-  for (const p of PARTIDOS) {
-    const res = resultados[p.id] || {};
-    html += `<div class="partido-item"><div class="partido-equipos"><span class="equipo-local"><strong>${p.local}</strong></span><span class="vs">VS</span><span class="equipo-visita"><strong>${p.visita}</strong></span></div><div style="display:flex;justify-content:center;gap:0.5rem;margin-top:0.5rem;flex-wrap:wrap"><input type="number" id="resL_${p.id}" class="resultado-input" value="${res.local||''}" placeholder="0"><span>-</span><input type="number" id="resV_${p.id}" class="resultado-input" value="${res.visita||''}" placeholder="0"><button class="btn btn-primary" onclick="guardarResultadoHandler(${p.id})">💾 Guardar</button>${res.local!==undefined?`<button class="btn btn-danger" onclick="borrarResultadoHandler(${p.id})">🗑️</button>`:''}</div><div style="font-size:0.7rem;color:#888;text-align:center;margin-top:5px">📅 ${p.fecha} · Grupo ${p.grupo}</div></div>`;
-  }
-  html += `</div>`;
-  document.getElementById('adminResultados').innerHTML = html;
-}
-
-async function guardarResultadoHandler(partidoId) {
-  const local = document.getElementById(`resL_${partidoId}`).value;
-  const visita = document.getElementById(`resV_${partidoId}`).value;
-  if (local === '' || visita === '') { mostrarToast('❌ Ingresa ambos marcadores', 'error'); return; }
-  await guardarResultado(partidoId, parseInt(local), parseInt(visita));
-  renderAdminResultados();
-}
-
-async function borrarResultadoHandler(partidoId) {
-  if (confirm('¿Estás seguro de borrar este resultado?')) {
-    await borrarResultado(partidoId);
-    renderAdminResultados();
-  }
-}
-
-async function borrarTodosResultadosHandler() {
-  if (confirm('⚠️ ¿Estás seguro? Esto borrará TODOS los resultados.')) {
-    for (const partido of PARTIDOS) {
-      if (resultados[partido.id]) await borrarResultado(partido.id);
+    function renderAdminEquipos() {
+      const html = `<div class="card"><div class="card-title">👥 Gestión de Equipos</div>${equipos.map(eq => `<div class="equipo-row"><input type="text" id="nombre_${eq.id}" value="${eq.nombre}" style="width:150px"><input type="password" id="pin_${eq.id}" value="${eq.pin}" style="width:80px"><span style="color:${eq.activo?'#6c9ebf':'#ff6b6b'}">${eq.activo?'✅ Activo':'❌ Inactivo'}</span><button class="btn btn-primary" onclick="guardarEquipo(${eq.id})">💾</button><button class="btn ${eq.activo?'btn-danger':'btn-success'}" onclick="toggleEquipo(${eq.id})">${eq.activo?'❌':'✅'}</button></div>`).join('')}<button class="btn btn-primary" style="margin-top:1rem" onclick="agregarEquipo()">+ Agregar Equipo</button></div>`;
+      document.getElementById('adminEquipos').innerHTML = html;
     }
-    renderAdminResultados();
-  }
-}
 
-function renderAdminAdherencia() {
-  const hoy = new Date().toISOString().split('T')[0];
-  const fechas = [];
-  for (let i = 0; i < 30; i++) { const f = new Date(); f.setDate(f.getDate() - i); fechas.push(f.toISOString().split('T')[0]); }
-  let html = `<div class="card"><div class="card-title">📋 Adherencia Operativa Diaria</div><div style="margin-bottom:1rem"><label>Fecha: </label><select id="adhFechaSelect" onchange="cargarAdherenciaFecha()">${fechas.map(f => `<option value="${f}" ${f===hoy?'selected':''}>${f}</option>`).join('')}</select></div><div id="adherenciaDia"></div></div>`;
-  document.getElementById('adminAdherencia').innerHTML = html;
-  cargarAdherenciaFecha();
-}
-
-function cargarAdherenciaFecha() {
-  const fecha = document.getElementById('adhFechaSelect').value;
-  let html = `<div class="adherencia-grid">`;
-  for (const equipo of equipos) {
-    if (!equipo.activo) continue;
-    const valorActual = (adherencia[equipo.id] && adherencia[equipo.id][fecha]) !== undefined ? adherencia[equipo.id][fecha] : null;
-    html += `<div class="adh-equipo"><span><strong>${equipo.nombre}</strong></span><div class="adh-btns"><button class="adh-btn ${valorActual===5?'selected':''}" onclick="setAdherenciaHandler(${equipo.id},'${fecha}',5)">✅ Todos (+5)</button><button class="adh-btn ${valorActual===3?'selected':''}" onclick="setAdherenciaHandler(${equipo.id},'${fecha}',3)">⚠️ 1 incumple (+3)</button><button class="adh-btn ${valorActual===1?'selected':''}" onclick="setAdherenciaHandler(${equipo.id},'${fecha}',1)">⚠️⚠️ 2 incumplen (+1)</button><button class="adh-btn ${valorActual===0?'selected':''}" onclick="setAdherenciaHandler(${equipo.id},'${fecha}',0)">❌ Más de 2 (0)</button></div></div>`;
-  }
-  html += `</div>`;
-  document.getElementById('adherenciaDia').innerHTML = html;
-}
-
-async function setAdherenciaHandler(equipoId, fecha, puntos) {
-  await guardarAdherencia(equipoId, fecha, puntos);
-  cargarAdherenciaFecha();
-}
-
-function renderAdminBonos() {
-  let html = `<div class="card"><div class="card-title">⭐ Bonificaciones (Fair Play)</div><div class="bono-row"><select id="bonoEquipo">${equipos.filter(e=>e.activo).map(e=>`<option value="${e.id}">${e.nombre}</option>`).join('')}</select><select id="bonotipo"><option value="adherenciaSemanal">🏆 Mejor adherencia semanal (+10)</option><option value="calidadSemanal">📊 Mejor calidad semanal (+10)</option><option value="productividadSemanal">⚡ Mejor productividad semanal (+10)</option><option value="asistencia">🎉 Mayor asistencia actividades (+5)</option><option value="personalizado">✨ Personalizado</option></select><input type="number" id="bonoPuntosPersonalizado" placeholder="Puntos" style="width:80px;display:none"><input type="text" id="bonoDescripcion" placeholder="Descripción" style="width:150px"><button class="btn btn-primary" onclick="agregarBonoHandler()">+ Agregar</button></div><div style="margin-top:1rem"><h4>Bonos registrados</h4>${bonos.map((b,i)=>{const eq=equipos.find(e=>e.id===b.equipo_id);return `<div class="equipo-row">⭐ ${eq?.nombre}: +${b.puntos} pts - ${b.descripcion} <button class="btn btn-danger btn-sm" onclick="eliminarBonoHandler(${i})">🗑️</button></div>`;}).join('')||'<div style="color:#888">No hay bonos registrados</div>'}</div></div>`;
-  document.getElementById('adminBonos').innerHTML = html;
-  const tipoSelect = document.getElementById('bonotipo');
-  if (tipoSelect) {
-    tipoSelect.addEventListener('change', function() {
-      const personalizadoInput = document.getElementById('bonoPuntosPersonalizado');
-      if (personalizadoInput) personalizadoInput.style.display = this.value === 'personalizado' ? 'inline-block' : 'none';
-    });
-  }
-}
-
-async function agregarBonoHandler() {
-  const equipoId = parseInt(document.getElementById('bonoEquipo').value);
-  const tipo = document.getElementById('bonotipo').value;
-  let puntos = CONFIG.ptsBonos[tipo] || 0;
-  if (tipo === 'personalizado') puntos = parseInt(document.getElementById('bonoPuntosPersonalizado').value) || 0;
-  const descripcion = document.getElementById('bonoDescripcion').value || `Bono por ${tipo}`;
-  await guardarBono(equipoId, puntos, descripcion);
-  renderAdminBonos();
-}
-
-async function eliminarBonoHandler(index) {
-  if (confirm('¿Estás seguro de eliminar este bono?')) {
-    await eliminarBono(index);
-    renderAdminBonos();
-  }
-}
-
-function renderAdminPenalizaciones() {
-  let html = `<div class="card"><div class="card-title">🚫 Penalizaciones</div><div class="bono-row"><select id="penEquipo">${equipos.filter(e=>e.activo).map(e=>`<option value="${e.id}">${e.nombre}</option>`).join('')}</select><select id="pentipo"><option value="conducta">🚨 Conducta antideportiva (-5)</option><option value="inasistencia">📅 Inasistencia injustificada (-10)</option><option value="convivencia">🤝 Incumplimiento convivencia (-10)</option><option value="personalizado">✨ Personalizado</option></select><input type="number" id="penPuntosPersonalizado" placeholder="Puntos" style="width:80px;display:none"><input type="text" id="penDescripcion" placeholder="Descripción" style="width:150px"><button class="btn btn-danger" onclick="agregarPenalizacionHandler()">- Aplicar</button></div><div style="margin-top:1rem"><h4>Penalizaciones registradas</h4>${penalizaciones.map((p,i)=>{const eq=equipos.find(e=>e.id===p.equipo_id);return `<div class="equipo-row">⚠️ ${eq?.nombre}: ${p.puntos} pts - ${p.descripcion} <button class="btn btn-danger btn-sm" onclick="eliminarPenalizacionHandler(${i})">🗑️</button></div>`;}).join('')||'<div style="color:#888">No hay penalizaciones registradas</div>'}</div></div>`;
-  document.getElementById('adminPenalizaciones').innerHTML = html;
-  const tipoSelect = document.getElementById('pentipo');
-  if (tipoSelect) {
-    tipoSelect.addEventListener('change', function() {
-      const personalizadoInput = document.getElementById('penPuntosPersonalizado');
-      if (personalizadoInput) personalizadoInput.style.display = this.value === 'personalizado' ? 'inline-block' : 'none';
-    });
-  }
-}
-
-async function agregarPenalizacionHandler() {
-  const equipoId = parseInt(document.getElementById('penEquipo').value);
-  const tipo = document.getElementById('pentipo').value;
-  let puntos = CONFIG.ptsPenalizaciones[tipo] || 0;
-  if (tipo === 'personalizado') puntos = parseInt(document.getElementById('penPuntosPersonalizado').value) || 0;
-  const descripcion = document.getElementById('penDescripcion').value || `Penalización por ${tipo}`;
-  await guardarPenalizacion(equipoId, puntos, descripcion);
-  renderAdminPenalizaciones();
-}
-
-async function eliminarPenalizacionHandler(index) {
-  if (confirm('¿Estás seguro de eliminar esta penalización?')) {
-    await eliminarPenalizacion(index);
-    renderAdminPenalizaciones();
-  }
-}
-
-function renderAdminPredicciones() {
-  let html = `<div class="card"><div class="card-title">👁️ Ver Predicciones de los Equipos</div>`;
-  for (const equipo of equipos) {
-    if (!equipo.activo) continue;
-    const predsEquipo = predicciones[equipo.id] || {};
-    const cantidad = Object.keys(predsEquipo).length;
-    html += `<div class="partido-item" style="margin-bottom:1rem"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;flex-wrap:wrap;gap:0.5rem"><strong style="color:#c0c0c0">${equipo.nombre}</strong><span style="color:#888">${cantidad} predicciones realizadas</span><button class="btn btn-danger btn-sm" onclick="borrarPrediccionesEquipoHandler(${equipo.id})">🗑️ Borrar todas</button></div>`;
-    if (cantidad > 0) {
-      html += `<div style="font-size:0.8rem;color:#888;">`;
+    function renderAdminResultados() {
+      let html = `<div class="card"><div class="card-title">⚽ Registrar Resultados Reales</div><div style="margin-bottom:1rem"><button class="btn btn-danger" onclick="borrarTodosResultados()">🗑️ Borrar TODOS los resultados</button></div>`;
       for (const p of PARTIDOS) {
-        const pred = predsEquipo[p.id];
-        if (pred) html += `<div style="margin:3px 0">📅 ${p.fecha} - ${p.local} ${pred.local} vs ${pred.visita} ${p.visita}</div>`;
+        const res = resultados[p.id] || {};
+        html += `<div class="partido-item"><div class="partido-equipos"><span class="equipo-local"><strong>${p.local}</strong></span><span class="vs">VS</span><span class="equipo-visita"><strong>${p.visita}</strong></span></div><div style="display:flex;justify-content:center;gap:0.5rem;margin-top:0.5rem;flex-wrap:wrap"><input type="number" id="resL_${p.id}" class="resultado-input" value="${res.local||''}" placeholder="0"><span>-</span><input type="number" id="resV_${p.id}" class="resultado-input" value="${res.visita||''}" placeholder="0"><button class="btn btn-primary" onclick="guardarResultado(${p.id})">💾 Guardar</button>${res.local!==undefined?`<button class="btn btn-danger" onclick="borrarResultado(${p.id})">🗑️</button>`:''}</div><div style="font-size:0.7rem;color:#888;text-align:center;margin-top:5px">📅 ${p.fecha} · Grupo ${p.grupo}</div></div>`;
       }
       html += `</div>`;
-    } else { html += `<div style="color:#888;font-size:0.8rem">Sin predicciones aún</div>`; }
-    html += `</div>`;
-  }
-  html += `</div>`;
-  document.getElementById('adminPrediccionesAdmin').innerHTML = html;
-}
+      document.getElementById('adminResultados').innerHTML = html;
+    }
 
-async function borrarPrediccionesEquipoHandler(equipoId) {
-  if (confirm(`⚠️ ¿Estás seguro? Esto borrará TODAS las predicciones de ${equipos.find(e=>e.id===equipoId)?.nombre}.`)) {
-    await borrarPrediccionesEquipoSupabase(equipoId);
-    renderAdminPredicciones();
-    if (currentUser && currentUser.id === equipoId) renderPredicciones();
-  }
-}
+    function renderAdminAdherencia() {
+      const hoy = new Date().toISOString().split('T')[0];
+      const fechas = [];
+      for (let i = 0; i < 30; i++) { const f = new Date(); f.setDate(f.getDate() - i); fechas.push(f.toISOString().split('T')[0]); }
+      let html = `<div class="card"><div class="card-title">📋 Adherencia Operativa Diaria</div><div style="margin-bottom:1rem"><label>Fecha: </label><select id="adhFechaSelect" onchange="cargarAdherenciaFecha()">${fechas.map(f => `<option value="${f}" ${f===hoy?'selected':''}>${f}</option>`).join('')}</select></div><div id="adherenciaDia"></div></div>`;
+      document.getElementById('adminAdherencia').innerHTML = html;
+      cargarAdherenciaFecha();
+    }
 
-function showPage(page) {
-  currentPage = page;
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById(`page${page.charAt(0).toUpperCase() + page.slice(1)}`).classList.add('active');
-  if (page === 'dashboard') renderDashboard();
-  if (page === 'predicciones') renderPredicciones();
-  if (page === 'admin' && currentUser?.isAdmin) showAdminTab('equipos');
-  actualizarMobileNav();
-}
+    function cargarAdherenciaFecha() {
+      const fecha = document.getElementById('adhFechaSelect').value;
+      let html = `<div class="adherencia-grid">`;
+      for (const equipo of equipos) {
+        if (!equipo.activo) continue;
+        const valorActual = (adherencia[equipo.id] && adherencia[equipo.id][fecha]) || null;
+        html += `<div class="adh-equipo"><span><strong>${equipo.nombre}</strong></span><div class="adh-btns"><button class="adh-btn ${valorActual===5?'selected':''}" onclick="setAdherencia(${equipo.id},'${fecha}',5)">✅ Todos (+5)</button><button class="adh-btn ${valorActual===3?'selected':''}" onclick="setAdherencia(${equipo.id},'${fecha}',3)">⚠️ 1 incumple (+3)</button><button class="adh-btn ${valorActual===1?'selected':''}" onclick="setAdherencia(${equipo.id},'${fecha}',1)">⚠️⚠️ 2 incumplen (+1)</button><button class="adh-btn ${valorActual===0?'selected':''}" onclick="setAdherencia(${equipo.id},'${fecha}',0)">❌ Más de 2 (0)</button></div></div>`;
+      }
+      html += `</div>`;
+      document.getElementById('adherenciaDia').innerHTML = html;
+    }
 
-function showAdminTab(tab) {
-  document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
-  if (tab === 'equipos') {
-    document.querySelector('.admin-tab[onclick*="equipos"]').classList.add('active');
-    document.getElementById('adminEquipos').classList.add('active');
-    renderAdminEquipos();
-  } else if (tab === 'resultados') {
-    document.querySelector('.admin-tab[onclick*="resultados"]').classList.add('active');
-    document.getElementById('adminResultados').classList.add('active');
-    renderAdminResultados();
-  } else if (tab === 'adherencia') {
-    document.querySelector('.admin-tab[onclick*="adherencia"]').classList.add('active');
-    document.getElementById('adminAdherencia').classList.add('active');
-    renderAdminAdherencia();
-  } else if (tab === 'bonos') {
-    document.querySelector('.admin-tab[onclick*="bonos"]').classList.add('active');
-    document.getElementById('adminBonos').classList.add('active');
-    renderAdminBonos();
-  } else if (tab === 'penalizaciones') {
-    document.querySelector('.admin-tab[onclick*="penalizaciones"]').classList.add('active');
-    document.getElementById('adminPenalizaciones').classList.add('active');
-    renderAdminPenalizaciones();
-  } else if (tab === 'prediccionesAdmin') {
-    document.querySelector('.admin-tab[onclick*="prediccionesAdmin"]').classList.add('active');
-    document.getElementById('adminPrediccionesAdmin').classList.add('active');
-    renderAdminPredicciones();
-  }
-}
+    function setAdherencia(equipoId, fecha, puntos) {
+      if (!adherencia[equipoId]) adherencia[equipoId] = {};
+      adherencia[equipoId][fecha] = puntos;
+      saveData();
+      mostrarToast(`✅ Adherencia registrada: +${puntos} puntos`);
+      cargarAdherenciaFecha();
+    }
 
-async function doLogin() {
-  const equipoId = parseInt(document.getElementById('loginEquipo').value);
-  const pin = document.getElementById('loginPin').value;
-  const equipo = equipos.find(e => e.id === equipoId && e.pin === pin && e.activo);
-  if (!equipo) { document.getElementById('loginError').style.display = 'block'; return; }
-  document.getElementById('loginError').style.display = 'none';
-  currentUser = { id: equipo.id, nombre: equipo.nombre, isAdmin: false };
-  document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-  document.getElementById('userBadge').textContent = `🟢 ${equipo.nombre}`;
-  showPage('dashboard');
-}
+    function renderAdminBonos() {
+      let html = `<div class="card"><div class="card-title">⭐ Bonificaciones (Fair Play)</div><div class="bono-row"><select id="bonoEquipo">${equipos.filter(e=>e.activo).map(e=>`<option value="${e.id}">${e.nombre}</option>`).join('')}</select><select id="bonotipo"><option value="adherenciaSemanal">🏆 Mejor adherencia semanal (+10)</option><option value="calidadSemanal">📊 Mejor calidad semanal (+10)</option><option value="productividadSemanal">⚡ Mejor productividad semanal (+10)</option><option value="asistencia">🎉 Mayor asistencia actividades (+5)</option><option value="personalizado">✨ Personalizado</option></select><input type="number" id="bonoPuntosPersonalizado" placeholder="Puntos" style="width:80px;display:none"><input type="text" id="bonoDescripcion" placeholder="Descripción" style="width:150px"><button class="btn btn-primary" onclick="agregarBono()">+ Agregar</button></div><div style="margin-top:1rem"><h4>Bonos registrados</h4>${bonos.map((b,i)=>{const eq=equipos.find(e=>e.id===b.equipoId);return `<div class="equipo-row">⭐ ${eq?.nombre}: +${b.puntos} pts - ${b.descripcion} <button class="btn btn-danger btn-sm" onclick="eliminarBono(${i})">🗑️</button></div>`;}).join('')||'<div style="color:#888">No hay bonos registrados</div>'}</div></div>`;
+      document.getElementById('adminBonos').innerHTML = html;
+      document.getElementById('bonotipo').addEventListener('change',function(){document.getElementById('bonoPuntosPersonalizado').style.display=this.value==='personalizado'?'inline-block':'none';});
+    }
 
-function doAdminLogin() {
-  const pass = document.getElementById('adminPass').value;
-  if (pass !== CONFIG.adminPass) { document.getElementById('adminError').style.display = 'block'; return; }
-  document.getElementById('adminError').style.display = 'none';
-  currentUser = { id: 0, nombre: 'Admin', isAdmin: true };
-  document.getElementById('adminLoginScreen').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-  document.getElementById('userBadge').textContent = '⚙️ Admin';
-  document.getElementById('adminBtn').style.display = 'block';
-  showPage('dashboard');
-}
+    function agregarBono() {
+      const equipoId=parseInt(document.getElementById('bonoEquipo').value);
+      const tipo=document.getElementById('bonotipo').value;
+      let puntos=CONFIG.ptsBonos[tipo]||0;
+      if(tipo==='personalizado') puntos=parseInt(document.getElementById('bonoPuntosPersonalizado').value)||0;
+      const descripcion=document.getElementById('bonoDescripcion').value||`Bono por ${tipo}`;
+      bonos.push({equipoId,puntos,descripcion,fecha:new Date().toLocaleDateString()});
+      saveData();
+      mostrarToast(`⭐ Bono agregado: +${puntos} puntos`);
+      renderAdminBonos();
+    }
 
-function logout() {
-  currentUser = null;
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('loginScreen').style.display = 'flex';
-  document.getElementById('loginPin').value = '';
-  document.getElementById('adminBtn').style.display = 'none';
-}
+    function eliminarBono(index){bonos.splice(index,1);saveData();mostrarToast('🗑️ Bono eliminado');renderAdminBonos();}
 
-function showAdminLogin() {
-  document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('adminLoginScreen').style.display = 'flex';
-}
+    function renderAdminPenalizaciones() {
+      let html = `<div class="card"><div class="card-title">🚫 Penalizaciones</div><div class="bono-row"><select id="penEquipo">${equipos.filter(e=>e.activo).map(e=>`<option value="${e.id}">${e.nombre}</option>`).join('')}</select><select id="pentipo"><option value="conducta">🚨 Conducta antideportiva (-5)</option><option value="inasistencia">📅 Inasistencia injustificada (-10)</option><option value="convivencia">🤝 Incumplimiento convivencia (-10)</option><option value="personalizado">✨ Personalizado</option></select><input type="number" id="penPuntosPersonalizado" placeholder="Puntos" style="width:80px;display:none"><input type="text" id="penDescripcion" placeholder="Descripción" style="width:150px"><button class="btn btn-danger" onclick="agregarPenalizacion()">- Aplicar</button></div><div style="margin-top:1rem"><h4>Penalizaciones registradas</h4>${penalizaciones.map((p,i)=>{const eq=equipos.find(e=>e.id===p.equipoId);return `<div class="equipo-row">⚠️ ${eq?.nombre}: ${p.puntos} pts - ${p.descripcion} <button class="btn btn-danger btn-sm" onclick="eliminarPenalizacion(${i})">🗑️</button></div>`;}).join('')||'<div style="color:#888">No hay penalizaciones registradas</div>'}</div></div>`;
+      document.getElementById('adminPenalizaciones').innerHTML = html;
+      document.getElementById('pentipo').addEventListener('change',function(){document.getElementById('penPuntosPersonalizado').style.display=this.value==='personalizado'?'inline-block':'none';});
+    }
 
-function hideAdminLogin() {
-  document.getElementById('adminLoginScreen').style.display = 'none';
-  document.getElementById('loginScreen').style.display = 'flex';
-}
+    function agregarPenalizacion() {
+      const equipoId=parseInt(document.getElementById('penEquipo').value);
+      const tipo=document.getElementById('pentipo').value;
+      let puntos=CONFIG.ptsPenalizaciones[tipo]||0;
+      if(tipo==='personalizado') puntos=parseInt(document.getElementById('penPuntosPersonalizado').value)||0;
+      const descripcion=document.getElementById('penDescripcion').value||`Penalización por ${tipo}`;
+      penalizaciones.push({equipoId,puntos,descripcion,fecha:new Date().toLocaleDateString()});
+      saveData();
+      mostrarToast(`🚫 Penalización aplicada: ${puntos} puntos`);
+      renderAdminPenalizaciones();
+    }
 
-function actualizarMobileNav() {
-  const mobileNav = document.getElementById('mobileNav');
-  const pages = ['dashboard', 'predicciones'];
-  if (currentUser?.isAdmin) pages.push('admin');
-  mobileNav.innerHTML = pages.map(p => `<button onclick="showPage('${p}')" class="${currentPage === p ? 'active' : ''}">${p === 'dashboard' ? '📊' : p === 'predicciones' ? '🎯' : '⚙️'}<br><span style="font-size:0.6rem">${p}</span></button>`).join('');
-}
+    function eliminarPenalizacion(index){penalizaciones.splice(index,1);saveData();mostrarToast('🗑️ Penalización eliminada');renderAdminPenalizaciones();}
 
-function cargarEquiposLogin() {
-  const select = document.getElementById('loginEquipo');
-  select.innerHTML = '<option value="">-- Selecciona tu equipo --</option>' + equipos.filter(e => e.activo).map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
-}
+    function renderAdminPredicciones() {
+      let html = `<div class="card"><div class="card-title">👁️ Ver Predicciones de los Equipos</div>`;
+      for (const equipo of equipos) {
+        if (!equipo.activo) continue;
+        const predsEquipo = predicciones[equipo.id] || {};
+        const cantidad = Object.keys(predsEquipo).length;
+        html += `<div class="partido-item" style="margin-bottom:1rem"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;flex-wrap:wrap;gap:0.5rem"><strong style="color:#c0c0c0">${equipo.nombre}</strong><span style="color:#888">${cantidad} predicciones realizadas</span><button class="btn btn-danger btn-sm" onclick="borrarPrediccionesEquipo(${equipo.id})">🗑️ Borrar todas</button></div>`;
+        if (cantidad > 0) {
+          html += `<div style="font-size:0.8rem;color:#888;">`;
+          for (const p of PARTIDOS) {
+            const pred = predsEquipo[p.id];
+            if (pred) html += `<div style="margin:3px 0">📅 ${p.fecha} - ${p.local} ${pred.local} vs ${pred.visita} ${p.visita}</div>`;
+          }
+          html += `</div>`;
+        } else { html += `<div style="color:#888;font-size:0.8rem">Sin predicciones aún</div>`; }
+        html += `</div>`;
+      }
+      html += `</div>`;
+      document.getElementById('adminPrediccionesAdmin').innerHTML = html;
+    }
 
-function mostrarToast(mensaje, tipo = 'success') {
-  const toast = document.createElement('div');
-  toast.className = `toast ${tipo === 'error' ? 'error' : ''}`;
-  toast.textContent = mensaje;
-  document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 3000);
-}
+    function borrarPrediccionesEquipo(equipoId) {
+      if (confirm(`⚠️ ¿Estás seguro? Esto borrará TODAS las predicciones de ${equipos.find(e=>e.id===equipoId)?.nombre}.`)) {
+        if (predicciones[equipoId]) { delete predicciones[equipoId]; saveData(); mostrarToast(`🗑️ Predicciones eliminadas`); renderAdminPredicciones(); if (currentUser && currentUser.id === equipoId) renderPredicciones(); }
+      }
+    }
 
-// ==================== INICIALIZACIÓN ====================
-window.addEventListener('DOMContentLoaded', async () => {
-  await Promise.all([
-    cargarEquipos(),
-    cargarResultados(),
-    cargarPredicciones(),
-    cargarBonos(),
-    cargarPenalizaciones(),
-    cargarAdherencia()
-  ]);
-  setupRealtimeSubscriptions();
+    function guardarResultado(partidoId) {
+      const local=document.getElementById(`resL_${partidoId}`).value,visita=document.getElementById(`resV_${partidoId}`).value;
+      if(local===''||visita===''){mostrarToast('❌ Ingresa ambos marcadores','error');return;}
+      resultados[partidoId]={local:parseInt(local),visita:parseInt(visita)};
+      saveData();
+      mostrarToast('✅ Resultado guardado');
+      renderAdminResultados();
+      renderDashboard();
+      if(currentUser&&!currentUser.isAdmin) renderPredicciones();
+    }
 
-  const splash = document.getElementById('splashScreen');
-  setTimeout(() => {
-    splash.classList.add('hide');
-    setTimeout(() => {
-      splash.style.display = 'none';
-      document.getElementById('loginScreen').style.display = 'flex';
-    }, 800);
-  }, 2500);
-});
+    function borrarResultado(partidoId){delete resultados[partidoId];saveData();mostrarToast('🗑️ Resultado eliminado');renderAdminResultados();renderDashboard();if(currentUser&&!currentUser.isAdmin) renderPredicciones();}
+    function borrarTodosResultados(){if(confirm('⚠️ ¿Estás seguro? Esto borrará TODOS los resultados.')){resultados={};saveData();mostrarToast('🗑️ Todos los resultados eliminados');renderAdminResultados();renderDashboard();if(currentUser&&!currentUser.isAdmin) renderPredicciones();}}
+    function guardarEquipo(id){const eq=equipos.find(e=>e.id===id);if(eq){eq.nombre=document.getElementById(`nombre_${id}`).value;eq.pin=document.getElementById(`pin_${id}`).value;saveData();mostrarToast('✅ Equipo actualizado');renderAdminEquipos();cargarEquiposLogin();}}
+    function toggleEquipo(id){const eq=equipos.find(e=>e.id===id);if(eq){eq.activo=!eq.activo;saveData();mostrarToast(eq.activo?'✅ Equipo activado':'❌ Equipo desactivado');renderAdminEquipos();cargarEquiposLogin();}}
+    function agregarEquipo(){const newId=Math.max(...equipos.map(e=>e.id),0)+1;equipos.push({id:newId,nombre:`Equipo ${newId}`,pin:String(newId).padStart(4,'0'),activo:true});saveData();mostrarToast('➕ Equipo agregado');renderAdminEquipos();cargarEquiposLogin();}
+    function showPage(page){currentPage=page;document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(`page${page.charAt(0).toUpperCase()+page.slice(1)}`).classList.add('active');if(page==='dashboard')renderDashboard();if(page==='predicciones')renderPredicciones();if(page==='admin'&&currentUser?.isAdmin)showAdminTab('equipos');}
+    function showAdminTab(tab){document.querySelectorAll('.admin-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.admin-panel').forEach(p=>p.classList.remove('active'));if(tab==='equipos'){document.querySelector('.admin-tab[onclick*="equipos"]').classList.add('active');document.getElementById('adminEquipos').classList.add('active');renderAdminEquipos();}
+    else if(tab==='resultados'){document.querySelector('.admin-tab[onclick*="resultados"]').classList.add('active');document.getElementById('adminResultados').classList.add('active');renderAdminResultados();}
+    else if(tab==='adherencia'){document.querySelector('.admin-tab[onclick*="adherencia"]').classList.add('active');document.getElementById('adminAdherencia').classList.add('active');renderAdminAdherencia();}
+    else if(tab==='bonos'){document.querySelector('.admin-tab[onclick*="bonos"]').classList.add('active');document.getElementById('adminBonos').classList.add('active');renderAdminBonos();}
+    else if(tab==='penalizaciones'){document.querySelector('.admin-tab[onclick*="penalizaciones"]').classList.add('active');document.getElementById('adminPenalizaciones').classList.add('active');renderAdminPenalizaciones();}
+    else if(tab==='prediccionesAdmin'){document.querySelector('.admin-tab[onclick*="prediccionesAdmin"]').classList.add('active');document.getElementById('adminPrediccionesAdmin').classList.add('active');renderAdminPredicciones();}}
+    function doLogin(){const equipoId=parseInt(document.getElementById('loginEquipo').value);const pin=document.getElementById('loginPin').value;const equipo=equipos.find(e=>e.id===equipoId&&e.pin===pin&&e.activo);if(!equipo){document.getElementById('loginError').style.display='block';return;}document.getElementById('loginError').style.display='none';currentUser={id:equipo.id,nombre:equipo.nombre,isAdmin:false};document.getElementById('loginScreen').style.display='none';document.getElementById('app').style.display='block';document.getElementById('userBadge').textContent=`🟢 ${equipo.nombre}`;showPage('dashboard');actualizarMobileNav();}
+    function doAdminLogin(){const pass=document.getElementById('adminPass').value;if(pass!==CONFIG.adminPass){document.getElementById('adminError').style.display='block';return;}document.getElementById('adminError').style.display='none';currentUser={id:0,nombre:'Admin',isAdmin:true};document.getElementById('adminLoginScreen').style.display='none';document.getElementById('app').style.display='block';document.getElementById('userBadge').textContent='⚙️ Admin';document.getElementById('adminBtn').style.display='block';showPage('dashboard');actualizarMobileNav();}
+    function logout(){currentUser=null;document.getElementById('app').style.display='none';document.getElementById('loginScreen').style.display='flex';document.getElementById('loginPin').value='';document.getElementById('adminBtn').style.display='none';}
+    function showAdminLogin(){document.getElementById('loginScreen').style.display='none';document.getElementById('adminLoginScreen').style.display='flex';}
+    function hideAdminLogin(){document.getElementById('adminLoginScreen').style.display='none';document.getElementById('loginScreen').style.display='flex';}
+    function actualizarMobileNav(){const mobileNav=document.getElementById('mobileNav');const pages=['dashboard','predicciones'];if(currentUser?.isAdmin)pages.push('admin');mobileNav.innerHTML=pages.map(p=>`<button onclick="showPage('${p}')" class="${currentPage===p?'active':''}">${p==='dashboard'?'📊':p==='predicciones'?'🎯':'⚙️'}<br><span style="font-size:0.6rem">${p}</span></button>`).join('');}
+    function cargarEquiposLogin(){const select=document.getElementById('loginEquipo');select.innerHTML='<option value="">-- Selecciona tu equipo --</option>'+equipos.filter(e=>e.activo).map(e=>`<option value="${e.id}">${e.nombre}</option>`).join('');}
+    function mostrarToast(mensaje,tipo='success'){const toast=document.createElement('div');toast.className=`toast ${tipo==='error'?'error':''}`;toast.textContent=mensaje;document.body.appendChild(toast);setTimeout(()=>toast.remove(),3000);}
 
-// Exponer funciones globales
-window.guardarPrediccionHandler = guardarPrediccionHandler;
-window.guardarResultadoHandler = guardarResultadoHandler;
-window.borrarResultadoHandler = borrarResultadoHandler;
-window.borrarTodosResultadosHandler = borrarTodosResultadosHandler;
-window.guardarEquipoHandler = guardarEquipoHandler;
-window.toggleEquipoHandler = toggleEquipoHandler;
-window.agregarEquipoHandler = agregarEquipoHandler;
-window.setAdherenciaHandler = setAdherenciaHandler;
-window.cargarAdherenciaFecha = cargarAdherenciaFecha;
-window.agregarBonoHandler = agregarBonoHandler;
-window.eliminarBonoHandler = eliminarBonoHandler;
-window.agregarPenalizacionHandler = agregarPenalizacionHandler;
-window.eliminarPenalizacionHandler = eliminarPenalizacionHandler;
-window.borrarPrediccionesEquipoHandler = borrarPrediccionesEquipoHandler;
-window.showPage = showPage;
-window.showAdminTab = showAdminTab;
-window.doLogin = doLogin;
-window.doAdminLogin = doAdminLogin;
-window.showAdminLogin = showAdminLogin;
-window.hideAdminLogin = hideAdminLogin;
-window.logout = logout;
+    // Mostrar splash y luego login
+    window.addEventListener('DOMContentLoaded', () => {
+      const splash = document.getElementById('splashScreen');
+      setTimeout(() => {
+        splash.classList.add('hide');
+        setTimeout(() => {
+          splash.style.display = 'none';
+          document.getElementById('loginScreen').style.display = 'flex';
+        }, 800);
+      }, 2500);
+    });
+
+    window.guardarPrediccion=guardarPrediccion;window.guardarResultado=guardarResultado;window.borrarResultado=borrarResultado;window.borrarTodosResultados=borrarTodosResultados;window.guardarEquipo=guardarEquipo;window.toggleEquipo=toggleEquipo;window.agregarEquipo=agregarEquipo;window.setAdherencia=setAdherencia;window.cargarAdherenciaFecha=cargarAdherenciaFecha;window.agregarBono=agregarBono;window.eliminarBono=eliminarBono;window.agregarPenalizacion=agregarPenalizacion;window.eliminarPenalizacion=eliminarPenalizacion;window.borrarPrediccionesEquipo=borrarPrediccionesEquipo;window.showPage=showPage;window.showAdminTab=showAdminTab;window.doLogin=doLogin;window.doAdminLogin=doAdminLogin;window.showAdminLogin=showAdminLogin;window.hideAdminLogin=hideAdminLogin;window.logout=logout;
+    loadData();cargarEquiposLogin();
   </script>
 </body>
 </html>
