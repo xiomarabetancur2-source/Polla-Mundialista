@@ -8,18 +8,6 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0a0a0a; color: #e0e0e0; overflow-x: hidden; }
-    .splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #0d2137 0%, #1a3a5c 50%, #2c5282 100%); display: flex; justify-content: center; align-items: center; z-index: 9999; transition: opacity 0.8s ease; }
-    .splash-content { text-align: center; animation: fadeInUp 1s ease; }
-    .splash-ball { font-size: 80px; animation: bounce 1s ease infinite, spin 2s linear infinite; display: inline-block; }
-    .splash-title { font-size: 3rem; font-weight: bold; color: #c0c0c0; letter-spacing: 4px; }
-    .splash-sub { color: #a0a0a0; letter-spacing: 2px; }
-    .splash-bar { width: 200px; height: 3px; background: rgba(192,192,192,0.2); margin: 2rem auto 0; border-radius: 99px; overflow: hidden; }
-    .splash-bar-fill { width: 0%; height: 100%; background: #c0c0c0; animation: fillBar 2.5s ease forwards; border-radius: 99px; }
-    @keyframes bounce { 0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)} }
-    @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
-    @keyframes fadeInUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
-    @keyframes fillBar { to{width:100%} }
-    .splash-screen.hide { opacity: 0; pointer-events: none; }
     .login-container { min-height: 100vh; display: flex; justify-content: center; align-items: center; background: linear-gradient(135deg, #0d2137 0%, #1a3a5c 50%, #2c5282 100%); }
     .login-card { background: rgba(26,58,92,0.95); backdrop-filter: blur(10px); padding: 2rem; border-radius: 16px; width: 350px; text-align: center; border: 1px solid rgba(192,192,192,0.3); }
     .login-card h1 { color: #c0c0c0; margin-bottom: 1rem; }
@@ -86,27 +74,19 @@
     .toast { position: fixed; bottom: 20px; right: 20px; background: #28a745; color: white; padding: 10px 20px; border-radius: 8px; z-index: 1000; animation: fadeOut 3s forwards; }
     .toast.error { background: #dc3545; }
     @keyframes fadeOut { 0%{opacity:1}70%{opacity:1}100%{opacity:0;visibility:hidden} }
+    .loading { text-align: center; padding: 20px; color: #c0c0c0; }
   </style>
 </head>
 <body>
-  <div id="splashScreen" class="splash-screen">
-    <div class="splash-content">
-      <div class="splash-ball">⚽</div>
-      <h1 class="splash-title">MUNDIALITO GCA</h1>
-      <p class="splash-sub">GCA Technologies</p>
-      <div class="splash-bar"><div class="splash-bar-fill"></div></div>
-      <p id="splashStatus" style="margin-top:1rem;font-size:0.8rem;color:#a0a0a0">Conectando...</p>
-    </div>
-  </div>
-
-  <div id="loginScreen" class="login-container" style="display:none">
+  <div id="loginScreen" class="login-container">
     <div class="login-card">
       <h1>⚽ MUNDIALITO GCA 2026</h1>
       <p style="margin-bottom:1rem;color:#a0a0a0">GCA Technologies</p>
-      <select id="loginEquipo"><option value="">-- Selecciona tu equipo --</option></select>
-      <input type="password" id="loginPin" placeholder="PIN de equipo" maxlength="4">
+      <div class="loading" id="loadingEquipos">Cargando equipos...</div>
+      <select id="loginEquipo" style="display:none"><option value="">-- Selecciona tu equipo --</option></select>
+      <input type="password" id="loginPin" placeholder="PIN de equipo" maxlength="4" style="display:none">
       <div id="loginError" class="error">❌ PIN incorrecto</div>
-      <button onclick="doLogin()">INGRESAR</button>
+      <button onclick="doLogin()" style="display:none" id="loginBtn">INGRESAR</button>
       <button onclick="showAdminLogin()" style="background:rgba(13,33,55,0.8);margin-top:5px">🔐 ADMINISTRADOR</button>
     </div>
   </div>
@@ -251,7 +231,6 @@ async function cargarTodo() {
       adherencia[a.equipo_id][a.fecha] = a.puntos;
     });
     
-    cargarEquiposLogin();
     return true;
   } catch (error) {
     console.error('Error cargando datos:', error);
@@ -372,7 +351,7 @@ function calcularTotalPuntos() {
 
 function renderDashboard() {
   const ranking = calcularTotalPuntos();
-  document.getElementById('rankingList').innerHTML = `<table><thead><tr><th>#</th><th>Equipo</th><th>Total</th><th>Pred</th><th>Adh</th><th>Bonus</th><th>Pen</th><th>🎯</th></tr></thead><tbody>${ranking.map((eq, i) => `<tr><td style="font-weight:bold">${i+1} ${i===0?'🏆':''}${i===1?'🥈':''}${i===2?'🥉':''}</td><td>${eq.nombre}</td><td style="color:#c0c0c0;font-weight:bold">${eq.total}</td><td style="color:#6c9ebf">${eq.puntosPrediccion}</td><td style="color:#6c9ebf">${eq.puntosAdherencia}</td><td style="color:#c0c0c0">${eq.puntosBonos}</td><td style="color:#ff6b6b">${eq.puntosPenalizaciones}</td><td style="color:#ffd700">${eq.exactos}</td></tr>`).join('')}</tbody></table>`;
+  document.getElementById('rankingList').innerHTML = `<tr><thead><tr><th>#</th><th>Equipo</th><th>Total</th><th>Pred</th><th>Adh</th><th>Bonus</th><th>Pen</th><th>🎯</th></tr></thead><tbody>${ranking.map((eq, i) => `<tr><td style="font-weight:bold">${i+1} ${i===0?'🏆':''}${i===1?'🥈':''}${i===2?'🥉':''}</td><td>${eq.nombre}</td><td style="color:#c0c0c0;font-weight:bold">${eq.total}</td><td style="color:#6c9ebf">${eq.puntosPrediccion}</td><td style="color:#6c9ebf">${eq.puntosAdherencia}</td><td style="color:#c0c0c0">${eq.puntosBonos}</td><td style="color:#ff6b6b">${eq.puntosPenalizaciones}</td><td style="color:#ffd700">${eq.exactos}</td></tr>`).join('')}</tbody></table>`;
   
   const proximos = PARTIDOS.filter(p => !resultados[p.id]).slice(0, 5);
   document.getElementById('proximosPartidos').innerHTML = proximos.map(p => `<div class="partido-item"><div class="partido-equipos"><span class="equipo-local">${p.local}</span><span class="vs">VS</span><span class="equipo-visita">${p.visita}</span></div><div style="font-size:0.7rem;color:#888;text-align:center;margin-top:5px">📅 ${p.fecha} · Grupo ${p.grupo}</div></div>`).join('') || '<div style="text-align:center;padding:20px">✅ ¡Todos los partidos jugados!</div>';
@@ -427,6 +406,7 @@ async function guardarPrediccion(partidoId) {
   await guardarPrediccionSupabase(currentUser.id, partidoId, parseInt(local), parseInt(visita));
   renderDashboard();
   renderPredicciones();
+  mostrarToast('✅ Predicción guardada');
 }
 
 // ==================== ADMIN ====================
@@ -758,7 +738,19 @@ function actualizarMobileNav() {
 
 function cargarEquiposLogin() {
   const select = document.getElementById('loginEquipo');
-  select.innerHTML = '<option value="">-- Selecciona tu equipo --</option>' + equipos.filter(e => e.activo).map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
+  const loading = document.getElementById('loadingEquipos');
+  const loginBtn = document.getElementById('loginBtn');
+  const loginPin = document.getElementById('loginPin');
+  
+  if (equipos.length > 0) {
+    loading.style.display = 'none';
+    select.style.display = 'block';
+    loginPin.style.display = 'block';
+    loginBtn.style.display = 'block';
+    select.innerHTML = '<option value="">-- Selecciona tu equipo --</option>' + equipos.filter(e => e.activo).map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
+  } else {
+    loading.textContent = 'No hay equipos disponibles. Contacta al administrador.';
+  }
 }
 
 function mostrarToast(msg, tipo = 'success') {
@@ -771,21 +763,8 @@ function mostrarToast(msg, tipo = 'success') {
 
 // ==================== INICIALIZACIÓN ====================
 window.addEventListener('DOMContentLoaded', async () => {
-  const splash = document.getElementById('splashScreen');
-  const splashStatus = document.getElementById('splashStatus');
-  
-  splashStatus.textContent = 'Cargando...';
   await cargarTodo();
-  splashStatus.textContent = '¡Listo!';
-  
-  // SIEMPRE cerrar el splash después de 2.5 segundos
-  setTimeout(() => {
-    splash.classList.add('hide');
-    setTimeout(() => {
-      splash.style.display = 'none';
-      document.getElementById('loginScreen').style.display = 'flex';
-    }, 800);
-  }, 2500);
+  cargarEquiposLogin();
 });
 
 // Exponer funciones globales
