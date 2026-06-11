@@ -302,19 +302,6 @@
       padding-left: 0.5rem;
       border-left: 3px solid #4a7c9e;
     }
-    .btn-borrar-pred {
-      background: rgba(220, 53, 69, 0.7);
-      color: white;
-      border: none;
-      padding: 2px 8px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 0.7rem;
-      margin-left: 5px;
-    }
-    .btn-borrar-pred:hover {
-      background: #dc3545;
-    }
 
     /* Stats */
     .stats-grid {
@@ -401,7 +388,6 @@
     .btn-danger:hover { background: #dc3545; }
     .btn-success { background: rgba(40, 167, 69, 0.8); color: white; }
     .btn-success:hover { background: #28a745; }
-    .btn-warning { background: rgba(255, 152, 0, 0.8); color: #1a1a1a; }
     .resultado-input {
       width: 50px;
       padding: 5px;
@@ -549,12 +535,12 @@
         <div class="stats-grid" id="statsGrid"></div>
       </div>
 
-      <!-- Predicciones (solo para equipos normales) -->
+      <!-- Predicciones (solo para equipos normales - SIN BOTONES DE BORRAR) -->
       <div id="pagePredicciones" class="page">
         <div class="card">
           <div class="card-title">🎯 Mis Predicciones</div>
-          <div style="margin-bottom: 1rem; display: flex; gap: 0.5rem; justify-content: flex-end;">
-            <button class="btn btn-danger" onclick="borrarTodasMisPredicciones()">🗑️ Borrar TODAS mis predicciones</button>
+          <div style="margin-bottom: 0.5rem; font-size: 0.8rem; color: #888; text-align: center;">
+            💡 Las predicciones se guardan automáticamente. No se pueden modificar una vez guardadas.
           </div>
           <div id="prediccionesList"></div>
         </div>
@@ -804,7 +790,7 @@
       `;
     }
 
-    // ==================== PREDICCIONES ====================
+    // ==================== PREDICCIONES (SIN BOTONES DE BORRAR PARA EQUIPOS) ====================
     function renderPredicciones() {
       if (!currentUser || currentUser.isAdmin) {
         document.getElementById('prediccionesList').innerHTML = '<div style="text-align:center; padding:20px">🔒 Inicia sesión para hacer tus predicciones</div>';
@@ -838,16 +824,24 @@
           if (bloqueado) {
             const pts = calcularPuntosPrediccion(pred.local, pred.visita, res.local, res.visita);
             html += `<div class="pred-resultado">
-              🔒 Tu predicción: ${pred.local || '?'} - ${pred.visita || '?'}<br>
+              🔒 Partido finalizado<br>
+              Tu predicción: ${pred.local !== undefined ? pred.local : '?'} - ${pred.visita !== undefined ? pred.visita : '?'}<br>
               <span style="color: ${pts > 0 ? '#6c9ebf' : '#888'}">${pts !== null ? pts + ' puntos' : ''}</span>
             </div>`;
           } else {
-            html += `<div class="pred-inputs">
-              <input type="number" id="predL_${p.id}" value="${pred.local || ''}" placeholder="0" min="0" max="20" onchange="guardarPrediccion(${p.id})">
-              <span>-</span>
-              <input type="number" id="predV_${p.id}" value="${pred.visita || ''}" placeholder="0" min="0" max="20" onchange="guardarPrediccion(${p.id})">
-              <button class="btn-borrar-pred" onclick="borrarPrediccion(${p.id})" title="Borrar predicción">🗑️</button>
-            </div>`;
+            // Si ya tiene predicción guardada, mostrarla pero sin permitir modificar
+            const tienePrediccion = pred.local !== undefined && pred.visita !== undefined;
+            if (tienePrediccion) {
+              html += `<div class="pred-resultado">
+                ✅ Tu predicción guardada: <strong>${pred.local} - ${pred.visita}</strong>
+              </div>`;
+            } else {
+              html += `<div class="pred-inputs">
+                <input type="number" id="predL_${p.id}" value="" placeholder="0" min="0" max="20" onchange="guardarPrediccion(${p.id})">
+                <span>-</span>
+                <input type="number" id="predV_${p.id}" value="" placeholder="0" min="0" max="20" onchange="guardarPrediccion(${p.id})">
+              </div>`;
+            }
           }
           html += `</div>`;
         }
@@ -857,6 +851,14 @@
 
     function guardarPrediccion(partidoId) {
       if (!currentUser || currentUser.isAdmin) return;
+      
+      // Verificar si ya existe una predicción para este partido (no permitir modificar)
+      const misPreds = predicciones[currentUser.id] || {};
+      if (misPreds[partidoId] && misPreds[partidoId].local !== undefined) {
+        mostrarToast('❌ No puedes modificar una predicción ya guardada', 'error');
+        renderPredicciones(); // Recargar para mostrar el mensaje
+        return;
+      }
       
       const local = document.getElementById(`predL_${partidoId}`).value;
       const visita = document.getElementById(`predV_${partidoId}`).value;
@@ -874,31 +876,8 @@
       };
       
       saveData();
-      mostrarToast('✅ Predicción guardada');
-    }
-
-    function borrarPrediccion(partidoId) {
-      if (!currentUser || currentUser.isAdmin) return;
-      
-      if (predicciones[currentUser.id] && predicciones[currentUser.id][partidoId]) {
-        delete predicciones[currentUser.id][partidoId];
-        saveData();
-        mostrarToast('🗑️ Predicción eliminada');
-        renderPredicciones();
-      }
-    }
-
-    function borrarTodasMisPredicciones() {
-      if (!currentUser || currentUser.isAdmin) return;
-      
-      if (confirm('⚠️ ¿Estás seguro? Esto borrará TODAS tus predicciones. Esta acción no se puede deshacer.')) {
-        if (predicciones[currentUser.id]) {
-          delete predicciones[currentUser.id];
-        }
-        saveData();
-        mostrarToast('🗑️ Todas tus predicciones han sido eliminadas');
-        renderPredicciones();
-      }
+      mostrarToast('✅ Predicción guardada (no se puede modificar después)');
+      renderPredicciones();
     }
 
     // ==================== ADMIN - EQUIPOS ====================
@@ -1188,6 +1167,7 @@
           saveData();
           mostrarToast(`🗑️ Predicciones de ${equipos.find(e => e.id === equipoId)?.nombre} eliminadas`);
           renderAdminPredicciones();
+          if (currentUser && currentUser.id === equipoId) renderPredicciones();
         }
       }
     }
@@ -1351,8 +1331,6 @@
 
     // ==================== EXPORTAR FUNCIONES GLOBALES ====================
     window.guardarPrediccion = guardarPrediccion;
-    window.borrarPrediccion = borrarPrediccion;
-    window.borrarTodasMisPredicciones = borrarTodasMisPredicciones;
     window.guardarResultado = guardarResultado;
     window.borrarResultado = borrarResultado;
     window.borrarTodosResultados = borrarTodosResultados;
