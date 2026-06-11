@@ -35,6 +35,7 @@
 
     .app-header { background: #0d2137; padding: 0.8rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #c0c0c0; flex-wrap: wrap; gap: 0.5rem; }
     .logo { font-size: 1.3rem; font-weight: bold; color: #c0c0c0; }
+    .logo span { color: #4a7c9e; }
     .nav-buttons { display: flex; gap: 0.3rem; flex-wrap: wrap; }
     .nav-btn { background: transparent; border: none; color: #a0a0a0; padding: 0.4rem 0.8rem; cursor: pointer; border-radius: 8px; font-size: 0.85rem; }
     .nav-btn:hover { background: rgba(74,124,158,0.3); color: #c0c0c0; }
@@ -82,6 +83,14 @@
     .btn-danger { background: #dc3545; color: white; }
     .btn-success { background: #28a745; color: white; }
     .resultado-input { width: 50px; padding: 5px; text-align: center; background: rgba(13,33,55,0.8); border: 1px solid #555; border-radius: 6px; color: white; }
+
+    .adherencia-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.5rem; margin-top: 0.5rem; }
+    .adh-equipo { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: rgba(13,33,55,0.6); border-radius: 8px; border: 1px solid rgba(192,192,192,0.15); }
+    .adh-btns { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+    .adh-btn { padding: 4px 8px; border-radius: 6px; background: rgba(13,33,55,0.8); border: 1px solid #555; color: #a0a0a0; cursor: pointer; font-size: 0.65rem; }
+    .adh-btn.selected { background: #ffc107; color: #1a1a1a; border-color: #ffc107; }
+    .bono-row { display: flex; gap: 0.5rem; margin-bottom: 0.5rem; align-items: center; flex-wrap: wrap; }
+
     .toast { position: fixed; bottom: 20px; right: 20px; background: #28a745; color: white; padding: 10px 20px; border-radius: 8px; z-index: 1000; animation: fadeOut 3s forwards; }
     .toast.error { background: #dc3545; }
     @keyframes fadeOut { 0% { opacity: 1; } 70% { opacity: 1; } 100% { opacity: 0; visibility: hidden; } }
@@ -227,63 +236,55 @@
     }
 
     async function cargarResultados() {
-      try {
-        const data = await apiFetch('resultados');
-        const res = {};
-        for (const r of data) res[r.partido_id] = { local: r.local, visita: r.visita };
-        return res;
-      } catch(e) { return {}; }
+      try { const data = await apiFetch('resultados'); const res = {}; for (const r of data) res[r.partido_id] = { local: r.local, visita: r.visita }; return res; } catch(e) { return {}; }
     }
 
     async function cargarPrediccionesEquipo(equipoId) {
-      try {
-        const data = await apiFetch(`predicciones?equipo_id=eq.${equipoId}`);
-        const preds = {};
-        for (const p of data) preds[p.partido_id] = { local: p.local, visita: p.visita };
-        return preds;
-      } catch(e) { return {}; }
+      try { const data = await apiFetch(`predicciones?equipo_id=eq.${equipoId}`); const preds = {}; for (const p of data) preds[p.partido_id] = { local: p.local, visita: p.visita }; return preds; } catch(e) { return {}; }
     }
 
     async function guardarPrediccionCloud(equipoId, partidoId, local, visita) {
       try {
         const existentes = await apiFetch(`predicciones?equipo_id=eq.${equipoId}&partido_id=eq.${partidoId}`);
-        if (existentes.length > 0) {
-          await apiFetch(`predicciones?equipo_id=eq.${equipoId}&partido_id=eq.${partidoId}`, 'PATCH', { local, visita });
-        } else {
-          await apiFetch('predicciones', 'POST', { equipo_id: equipoId, partido_id: partidoId, local, visita });
-        }
+        if (existentes.length > 0) { await apiFetch(`predicciones?equipo_id=eq.${equipoId}&partido_id=eq.${partidoId}`, 'PATCH', { local, visita }); }
+        else { await apiFetch('predicciones', 'POST', { equipo_id: equipoId, partido_id: partidoId, local, visita }); }
       } catch(e) { console.error(e); }
     }
 
     async function guardarResultadoCloud(partidoId, local, visita) {
       try {
         const existentes = await apiFetch(`resultados?partido_id=eq.${partidoId}`);
-        if (existentes.length > 0) {
-          await apiFetch(`resultados?partido_id=eq.${partidoId}`, 'PATCH', { local, visita });
-        } else {
-          await apiFetch('resultados', 'POST', { partido_id: partidoId, local, visita });
-        }
+        if (existentes.length > 0) { await apiFetch(`resultados?partido_id=eq.${partidoId}`, 'PATCH', { local, visita }); }
+        else { await apiFetch('resultados', 'POST', { partido_id: partidoId, local, visita }); }
       } catch(e) { console.error(e); }
     }
 
-    async function borrarResultadoCloud(partidoId) {
-      try { await apiFetch(`resultados?partido_id=eq.${partidoId}`, 'DELETE'); } catch(e) { console.error(e); }
+    async function borrarResultadoCloud(partidoId) { try { await apiFetch(`resultados?partido_id=eq.${partidoId}`, 'DELETE'); } catch(e) { console.error(e); } }
+    async function borrarTodosResultadosCloud() { const resultados = await cargarResultados(); for (const partidoId of Object.keys(resultados)) { await borrarResultadoCloud(partidoId); } }
+    async function guardarEquipoCloud(id, nombre, pin, activo) { try { await apiFetch(`equipos?id=eq.${id}`, 'PATCH', { nombre, pin, activo }); } catch(e) { console.error(e); } }
+    async function agregarEquipoCloud(nombre, pin) { try { await apiFetch('equipos', 'POST', { nombre, pin, activo: true }); } catch(e) { console.error(e); } }
+
+    // ADHERENCIA
+    async function cargarAdherencia() {
+      try { const data = await apiFetch('adherencia'); const adh = {}; for (const a of data) { if (!adh[a.equipo_id]) adh[a.equipo_id] = {}; adh[a.equipo_id][a.fecha] = a.puntos; } return adh; } catch(e) { return {}; }
+    }
+    async function guardarAdherenciaCloud(equipoId, fecha, puntos) {
+      try {
+        const existentes = await apiFetch(`adherencia?equipo_id=eq.${equipoId}&fecha=eq.${fecha}`);
+        if (existentes.length > 0) { await apiFetch(`adherencia?equipo_id=eq.${equipoId}&fecha=eq.${fecha}`, 'PATCH', { puntos }); }
+        else { await apiFetch('adherencia', 'POST', { equipo_id: equipoId, fecha, puntos }); }
+      } catch(e) { console.error(e); }
     }
 
-    async function borrarTodosResultadosCloud() {
-      const resultados = await cargarResultados();
-      for (const partidoId of Object.keys(resultados)) {
-        await borrarResultadoCloud(partidoId);
-      }
-    }
+    // BONOS
+    async function cargarBonos() { try { return await apiFetch('bonos'); } catch(e) { return []; } }
+    async function guardarBonoCloud(equipoId, puntos, descripcion) { try { await apiFetch('bonos', 'POST', { equipo_id: equipoId, puntos, descripcion, fecha: new Date().toLocaleDateString() }); } catch(e) { console.error(e); } }
+    async function eliminarBonoCloud(id) { try { await apiFetch(`bonos?id=eq.${id}`, 'DELETE'); } catch(e) { console.error(e); } }
 
-    async function guardarEquipoCloud(id, nombre, pin, activo) {
-      try { await apiFetch(`equipos?id=eq.${id}`, 'PATCH', { nombre, pin, activo }); } catch(e) { console.error(e); }
-    }
-
-    async function agregarEquipoCloud(nombre, pin) {
-      try { await apiFetch('equipos', 'POST', { nombre, pin, activo: true }); } catch(e) { console.error(e); }
-    }
+    // PENALIZACIONES
+    async function cargarPenalizaciones() { try { return await apiFetch('penalizaciones'); } catch(e) { return []; } }
+    async function guardarPenalizacionCloud(equipoId, puntos, descripcion) { try { await apiFetch('penalizaciones', 'POST', { equipo_id: equipoId, puntos, descripcion, fecha: new Date().toLocaleDateString() }); } catch(e) { console.error(e); } }
+    async function eliminarPenalizacionCloud(id) { try { await apiFetch(`penalizaciones?id=eq.${id}`, 'DELETE'); } catch(e) { console.error(e); } }
 
     function calcularPuntos(predLocal, predVisit, resLocal, resVisit) {
       if (resLocal === undefined) return 0;
@@ -296,20 +297,29 @@
     async function calcularRanking() {
       const equipos = equiposCache.filter(e => e.activo);
       const resultados = await cargarResultados();
+      const adherencia = await cargarAdherencia();
+      const bonos = await cargarBonos();
+      const penalizaciones = await cargarPenalizaciones();
       const ranking = [];
       for (const equipo of equipos) {
         const preds = await cargarPrediccionesEquipo(equipo.id);
-        let puntos = 0, exactos = 0;
+        let puntosPred = 0, exactos = 0;
         for (const p of PARTIDOS) {
           const res = resultados[p.id];
           const pred = preds[p.id];
           if (res && pred) {
             const pts = calcularPuntos(pred.local, pred.visita, res.local, res.visita);
-            if (pts === 5) { puntos += pts; exactos++; }
-            else if (pts === 2) puntos += pts;
+            if (pts === 5) { puntosPred += pts; exactos++; }
+            else if (pts === 2) puntosPred += pts;
           }
         }
-        ranking.push({ id: equipo.id, nombre: equipo.nombre, puntos, exactos });
+        let puntosAdh = 0;
+        const adhEq = adherencia[equipo.id] || {};
+        for (const f in adhEq) puntosAdh += adhEq[f];
+        const puntosBonos = bonos.filter(b => b.equipo_id === equipo.id).reduce((a,b) => a + b.puntos, 0);
+        const puntosPen = penalizaciones.filter(p => p.equipo_id === equipo.id).reduce((a,b) => a + b.puntos, 0);
+        const total = puntosPred + puntosAdh + puntosBonos + puntosPen;
+        ranking.push({ id: equipo.id, nombre: equipo.nombre, puntos: total, exactos, puntosPred, puntosAdh, puntosBonos, puntosPen });
       }
       ranking.sort((a, b) => b.puntos - a.puntos || b.exactos - a.exactos);
       return ranking;
@@ -318,13 +328,13 @@
     async function renderDashboard() {
       const ranking = await calcularRanking();
       const resultados = await cargarResultados();
-      let html = '</table><thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>🎯</th></tr></thead><tbody>';
+      let html = '<table><thead><tr><th>#</th><th>Equipo</th><th>Total</th><th>Pred</th><th>Adh</th><th>Bonus</th><th>Pen</th><th>🎯</th></tr></thead><tbody>';
       for (let i = 0; i < ranking.length; i++) {
         const eq = ranking[i];
-        html += `<tr><td>${i+1} ${i===0?'🏆':''}${i===1?'🥈':''}${i===2?'🥉':''}</td><td>${eq.nombre}</td><td class="rank-pts">${eq.puntos}</td><td>${eq.exactos}</td></tr>`;
+        html += `<tr><td>${i+1} ${i===0?'🏆':''}${i===1?'🥈':''}${i===2?'🥉':''}</td><td>${eq.nombre}</td><td class="rank-pts">${eq.puntos}</td><td>${eq.puntosPred}</td><td>${eq.puntosAdh}</td><td>${eq.puntosBonos}</td><td>${eq.puntosPen}</td><td>${eq.exactos}</td></tr>`;
       }
-      if (ranking.length === 0) html += '<tr><td colspan="4">Sin datos. Agrega resultados desde Admin</td></tr>';
-      html += '</tbody></table>';
+      if (ranking.length === 0) html += '<tr><td colspan="8">Sin datos. Agrega resultados desde Admin</td></tr>';
+      html += '</tbody><table>';
       document.getElementById('rankingList').innerHTML = html;
 
       const proximos = PARTIDOS.filter(p => !resultados[p.id]).slice(0,5);
@@ -383,6 +393,7 @@
       renderDashboard();
     }
 
+    // ADMIN EQUIPOS
     async function renderAdminEquipos() {
       let html = `<div class="card"><div class="card-title">👥 Equipos</div>`;
       for (const eq of equiposCache) {
@@ -398,49 +409,11 @@
       document.getElementById('adminEquipos').innerHTML = html;
     }
 
-    async function renderAdminResultados() {
-      const resultados = await cargarResultados();
-      let html = `<div class="card"><div class="card-title">⚽ Resultados</div><div style="margin-bottom:1rem"><button class="btn btn-danger" onclick="borrarTodosResultados()">🗑️ Borrar TODOS</button></div>`;
-      for (const p of PARTIDOS) {
-        const res = resultados[p.id] || {};
-        html += `<div class="partido-item"><div><strong>${p.local} vs ${p.visita}</strong> (${p.fecha})</div><div style="display:flex;gap:0.5rem;margin-top:0.5rem"><input type="number" id="resL_${p.id}" value="${res.local||''}" style="width:50px"><span>-</span><input type="number" id="resV_${p.id}" value="${res.visita||''}" style="width:50px"><button class="btn btn-primary" onclick="guardarResultado(${p.id})">Guardar</button>${res.local!==undefined?`<button class="btn btn-danger" onclick="borrarResultado(${p.id})">🗑️</button>`:''}</div></div>`;
-      }
-      html += `</div>`;
-      document.getElementById('adminResultados').innerHTML = html;
-    }
-
-    async function guardarResultado(partidoId) {
-      const local = document.getElementById(`resL_${partidoId}`).value;
-      const visita = document.getElementById(`resV_${partidoId}`).value;
-      if (local === '' || visita === '') { mostrarToast('❌ Ingresa ambos', 'error'); return; }
-      await guardarResultadoCloud(partidoId, parseInt(local), parseInt(visita));
-      mostrarToast('✅ Resultado guardado (todos lo ven)');
-      renderAdminResultados();
-      renderDashboard();
-      if (currentUser && !currentUser.isAdmin) renderPredicciones();
-    }
-
-    async function borrarResultado(partidoId) {
-      await borrarResultadoCloud(partidoId);
-      mostrarToast('🗑️ Eliminado');
-      renderAdminResultados();
-      renderDashboard();
-    }
-
-    async function borrarTodosResultados() {
-      if (confirm('¿Borrar TODOS los resultados?')) {
-        await borrarTodosResultadosCloud();
-        mostrarToast('🗑️ Todos eliminados');
-        renderAdminResultados();
-        renderDashboard();
-      }
-    }
-
     async function guardarEquipo(id) {
       const nombre = document.getElementById(`nom_${id}`).value;
       const pin = document.getElementById(`pin_${id}`).value;
       await guardarEquipoCloud(id, nombre, pin, true);
-      mostrarToast('✅ Equipo actualizado (todos lo ven)');
+      mostrarToast('✅ Equipo actualizado');
       await cargarEquipos();
       renderAdminEquipos();
       cargarEquiposLogin();
@@ -468,19 +441,167 @@
       cargarEquiposLogin();
     }
 
-    function renderAdminAdherencia() { document.getElementById('adminAdherencia').innerHTML = '<div class="card"><div class="card-title">📋 Adherencia</div><p>Próximamente</p></div>'; }
-    function renderAdminBonos() { document.getElementById('adminBonos').innerHTML = '<div class="card"><div class="card-title">⭐ Bonos</div><p>Próximamente</p></div>'; }
-    function renderAdminPenalizaciones() { document.getElementById('adminPenalizaciones').innerHTML = '<div class="card"><div class="card-title">🚫 Penalizaciones</div><p>Próximamente</p></div>'; }
+    // ADMIN RESULTADOS
+    async function renderAdminResultados() {
+      const resultados = await cargarResultados();
+      let html = `<div class="card"><div class="card-title">⚽ Resultados</div><div style="margin-bottom:1rem"><button class="btn btn-danger" onclick="borrarTodosResultados()">🗑️ Borrar TODOS</button></div>`;
+      for (const p of PARTIDOS) {
+        const res = resultados[p.id] || {};
+        html += `<div class="partido-item"><div><strong>${p.local} vs ${p.visita}</strong> (${p.fecha})</div><div style="display:flex;gap:0.5rem;margin-top:0.5rem"><input type="number" id="resL_${p.id}" value="${res.local||''}" style="width:50px"><span>-</span><input type="number" id="resV_${p.id}" value="${res.visita||''}" style="width:50px"><button class="btn btn-primary" onclick="guardarResultado(${p.id})">Guardar</button>${res.local!==undefined?`<button class="btn btn-danger" onclick="borrarResultado(${p.id})">🗑️</button>`:''}</div></div>`;
+      }
+      html += `</div>`;
+      document.getElementById('adminResultados').innerHTML = html;
+    }
+
+    async function guardarResultado(partidoId) {
+      const local = document.getElementById(`resL_${partidoId}`).value;
+      const visita = document.getElementById(`resV_${partidoId}`).value;
+      if (local === '' || visita === '') { mostrarToast('❌ Ingresa ambos', 'error'); return; }
+      await guardarResultadoCloud(partidoId, parseInt(local), parseInt(visita));
+      mostrarToast('✅ Resultado guardado');
+      renderAdminResultados();
+      renderDashboard();
+      if (currentUser && !currentUser.isAdmin) renderPredicciones();
+    }
+
+    async function borrarResultado(partidoId) {
+      await borrarResultadoCloud(partidoId);
+      mostrarToast('🗑️ Eliminado');
+      renderAdminResultados();
+      renderDashboard();
+    }
+
+    async function borrarTodosResultados() {
+      if (confirm('¿Borrar TODOS los resultados?')) {
+        await borrarTodosResultadosCloud();
+        mostrarToast('🗑️ Todos eliminados');
+        renderAdminResultados();
+        renderDashboard();
+      }
+    }
+
+    // ADMIN ADHERENCIA
+    async function renderAdminAdherencia() {
+      const hoy = new Date().toISOString().split('T')[0];
+      const fechas = [];
+      for (let i = 0; i < 30; i++) { const f = new Date(); f.setDate(f.getDate() - i); fechas.push(f.toISOString().split('T')[0]); }
+      let html = `<div class="card"><div class="card-title">📋 Adherencia Diaria</div><div style="margin-bottom:1rem"><label>Fecha: </label><select id="adhFechaSelect" onchange="cargarAdherenciaDia()">${fechas.map(f => `<option value="${f}" ${f===hoy?'selected':''}>${f}</option>`).join('')}</select></div><div id="adherenciaDia"></div></div>`;
+      document.getElementById('adminAdherencia').innerHTML = html;
+      await cargarAdherenciaDia();
+    }
+
+    async function cargarAdherenciaDia() {
+      const fecha = document.getElementById('adhFechaSelect').value;
+      const adherencia = await cargarAdherencia();
+      let html = `<div class="adherencia-grid">`;
+      for (const eq of equiposCache) {
+        if (!eq.activo) continue;
+        const valorActual = (adherencia[eq.id] && adherencia[eq.id][fecha]) || null;
+        html += `<div class="adh-equipo"><span><strong>${eq.nombre}</strong></span><div class="adh-btns">
+          <button class="adh-btn ${valorActual===5?'selected':''}" onclick="setAdherencia(${eq.id},'${fecha}',5)">✅ Todos (+5)</button>
+          <button class="adh-btn ${valorActual===3?'selected':''}" onclick="setAdherencia(${eq.id},'${fecha}',3)">⚠️ 1 incumple (+3)</button>
+          <button class="adh-btn ${valorActual===1?'selected':''}" onclick="setAdherencia(${eq.id},'${fecha}',1)">⚠️⚠️ 2 incumplen (+1)</button>
+          <button class="adh-btn ${valorActual===0?'selected':''}" onclick="setAdherencia(${eq.id},'${fecha}',0)">❌ Más de 2 (0)</button>
+        </div></div>`;
+      }
+      html += `</div>`;
+      document.getElementById('adherenciaDia').innerHTML = html;
+    }
+
+    async function setAdherencia(equipoId, fecha, puntos) {
+      await guardarAdherenciaCloud(equipoId, fecha, puntos);
+      mostrarToast(`✅ Adherencia: +${puntos} puntos`);
+      await cargarAdherenciaDia();
+      renderDashboard();
+    }
+
+    // ADMIN BONOS
+    async function renderAdminBonos() {
+      const bonos = await cargarBonos();
+      let html = `<div class="card"><div class="card-title">⭐ Bonificaciones</div><div class="bono-row">
+        <select id="bonoEquipo">${equiposCache.filter(e=>e.activo).map(e=>`<option value="${e.id}">${e.nombre}</option>`).join('')}</select>
+        <input type="number" id="bonoPuntos" placeholder="Puntos" style="width:80px" value="10">
+        <input type="text" id="bonoDescripcion" placeholder="Descripción" style="width:150px">
+        <button class="btn btn-primary" onclick="agregarBono()">+ Agregar Bono</button>
+      </div><div style="margin-top:1rem"><h4>Bonos registrados</h4>`;
+      for (const b of bonos) {
+        const eq = equiposCache.find(e => e.id === b.equipo_id);
+        html += `<div class="equipo-row">⭐ ${eq?.nombre}: +${b.puntos} pts - ${b.descripcion} (${b.fecha}) <button class="btn btn-danger btn-sm" onclick="eliminarBono(${b.id})">🗑️</button></div>`;
+      }
+      if (bonos.length === 0) html += '<div style="color:#888">No hay bonos</div>';
+      html += `</div></div>`;
+      document.getElementById('adminBonos').innerHTML = html;
+    }
+
+    async function agregarBono() {
+      const equipoId = parseInt(document.getElementById('bonoEquipo').value);
+      const puntos = parseInt(document.getElementById('bonoPuntos').value);
+      const descripcion = document.getElementById('bonoDescripcion').value || 'Bono';
+      await guardarBonoCloud(equipoId, puntos, descripcion);
+      mostrarToast(`⭐ Bono +${puntos} puntos`);
+      renderAdminBonos();
+      renderDashboard();
+    }
+
+    async function eliminarBono(id) {
+      await eliminarBonoCloud(id);
+      mostrarToast('🗑️ Bono eliminado');
+      renderAdminBonos();
+      renderDashboard();
+    }
+
+    // ADMIN PENALIZACIONES
+    async function renderAdminPenalizaciones() {
+      const penalizaciones = await cargarPenalizaciones();
+      let html = `<div class="card"><div class="card-title">🚫 Penalizaciones</div><div class="bono-row">
+        <select id="penEquipo">${equiposCache.filter(e=>e.activo).map(e=>`<option value="${e.id}">${e.nombre}</option>`).join('')}</select>
+        <input type="number" id="penPuntos" placeholder="Puntos" style="width:80px" value="-5">
+        <input type="text" id="penDescripcion" placeholder="Descripción" style="width:150px">
+        <button class="btn btn-danger" onclick="agregarPenalizacion()">- Aplicar</button>
+      </div><div style="margin-top:1rem"><h4>Penalizaciones</h4>`;
+      for (const p of penalizaciones) {
+        const eq = equiposCache.find(e => e.id === p.equipo_id);
+        html += `<div class="equipo-row">⚠️ ${eq?.nombre}: ${p.puntos} pts - ${p.descripcion} (${p.fecha}) <button class="btn btn-danger btn-sm" onclick="eliminarPenalizacion(${p.id})">🗑️</button></div>`;
+      }
+      if (penalizaciones.length === 0) html += '<div style="color:#888">No hay penalizaciones</div>';
+      html += `</div></div>`;
+      document.getElementById('adminPenalizaciones').innerHTML = html;
+    }
+
+    async function agregarPenalizacion() {
+      const equipoId = parseInt(document.getElementById('penEquipo').value);
+      const puntos = parseInt(document.getElementById('penPuntos').value);
+      const descripcion = document.getElementById('penDescripcion').value || 'Penalización';
+      await guardarPenalizacionCloud(equipoId, puntos, descripcion);
+      mostrarToast(`🚫 Penalización ${puntos} puntos`);
+      renderAdminPenalizaciones();
+      renderDashboard();
+    }
+
+    async function eliminarPenalizacion(id) {
+      await eliminarPenalizacionCloud(id);
+      mostrarToast('🗑️ Penalización eliminada');
+      renderAdminPenalizaciones();
+      renderDashboard();
+    }
+
+    // ADMIN VER PREDICCIONES
     async function renderAdminPrediccionesAdmin() {
       let html = `<div class="card"><div class="card-title">👁️ Ver Predicciones</div>`;
       for (const eq of equiposCache) {
         const preds = await cargarPrediccionesEquipo(eq.id);
-        html += `<div class="partido-item"><strong>${eq.nombre}</strong> - ${Object.keys(preds).length} predicciones</div>`;
+        html += `<div class="partido-item"><strong>${eq.nombre}</strong> - ${Object.keys(preds).length} predicciones<br>`;
+        for (const [pid, pred] of Object.entries(preds)) {
+          const p = PARTIDOS.find(p => p.id == pid);
+          if (p) html += `<span style="font-size:0.7rem;color:#888">${p.local} ${pred.local}-${pred.visita} ${p.visita}</span><br>`;
+        }
+        html += `</div>`;
       }
       html += `</div>`;
       document.getElementById('adminPrediccionesAdmin').innerHTML = html;
     }
 
+    // NAVEGACION
     function showPage(page) {
       currentPage = page;
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -530,6 +651,7 @@
     async function cargarEquiposLogin() { const select = document.getElementById('loginEquipo'); select.innerHTML = '<option value="">-- Selecciona --</option>' + equiposCache.filter(e=>e.activo).map(e=>`<option value="${e.id}">${e.nombre}</option>`).join(''); }
     function mostrarToast(m, t='success') { const toast = document.createElement('div'); toast.className = `toast ${t==='error'?'error':''}`; toast.textContent = m; document.body.appendChild(toast); setTimeout(()=>toast.remove(),3000); }
 
+    // GLOBALES
     window.guardarPrediccion = guardarPrediccion;
     window.guardarResultado = guardarResultado;
     window.borrarResultado = borrarResultado;
@@ -537,6 +659,12 @@
     window.guardarEquipo = guardarEquipo;
     window.toggleEquipo = toggleEquipo;
     window.agregarEquipo = agregarEquipo;
+    window.setAdherencia = setAdherencia;
+    window.cargarAdherenciaDia = cargarAdherenciaDia;
+    window.agregarBono = agregarBono;
+    window.eliminarBono = eliminarBono;
+    window.agregarPenalizacion = agregarPenalizacion;
+    window.eliminarPenalizacion = eliminarPenalizacion;
     window.showPage = showPage;
     window.showAdminTab = showAdminTab;
     window.doLogin = doLogin;
