@@ -8,7 +8,6 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0a0a0a; color: #e0e0e0; }
 
-    /* SPLASH */
     .splash-screen {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: linear-gradient(135deg, #0d2137, #1a3a5c, #2c5282);
@@ -26,7 +25,6 @@
     @keyframes fillBar { to { width: 100%; } }
     .splash-screen.hide { opacity: 0; visibility: hidden; }
 
-    /* LOGIN */
     .login-container { min-height: 100vh; display: flex; justify-content: center; align-items: center; background: linear-gradient(135deg, #0d2137, #1a3a5c, #2c5282); }
     .login-card { background: rgba(26,58,92,0.95); padding: 2rem; border-radius: 16px; width: 350px; text-align: center; border: 1px solid rgba(192,192,192,0.3); }
     .login-card h1 { color: #c0c0c0; margin-bottom: 1rem; }
@@ -35,7 +33,6 @@
     .login-card button:hover { background: #4a7c9e; color: white; }
     .error { color: #ff6b6b; margin-top: 10px; display: none; }
 
-    /* HEADER */
     .app-header { background: #0d2137; padding: 0.8rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(192,192,192,0.3); flex-wrap: wrap; gap: 0.5rem; }
     .logo { font-size: 1.3rem; font-weight: bold; color: #c0c0c0; }
     .logo span { color: #4a7c9e; }
@@ -47,7 +44,6 @@
     .user-badge { background: rgba(74,124,158,0.3); padding: 0.3rem 0.8rem; border-radius: 20px; color: #c0c0c0; font-size: 0.85rem; }
     .logout-btn { background: #dc3545; border: none; padding: 0.3rem 1rem; border-radius: 8px; color: white; cursor: pointer; font-size: 0.8rem; }
 
-    /* MAIN */
     .main-content { padding: 1rem; max-width: 1400px; margin: 0 auto; }
     .page { display: none; }
     .page.active { display: block; }
@@ -61,7 +57,7 @@
     th, td { padding: 8px; text-align: left; border-bottom: 1px solid rgba(192,192,192,0.1); font-size: 0.85rem; }
     th { color: #c0c0c0; }
     tr:hover { background: rgba(74,124,158,0.2); }
-    .rank-pts { color: #c0c0c0; font-weight: bold; font-size: 1.1rem; }
+    .rank-pts { color: #ffc107; font-weight: bold; font-size: 1.1rem; }
 
     .partido-item { background: rgba(13,33,55,0.6); border-radius: 8px; padding: 0.8rem; margin-bottom: 0.5rem; border: 1px solid rgba(192,192,192,0.15); }
     .partido-equipos { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
@@ -74,7 +70,7 @@
     .grupo-titulo { font-size: 1.1rem; color: #c0c0c0; margin: 1rem 0 0.5rem; padding-left: 0.5rem; border-left: 3px solid #4a7c9e; }
     .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-top: 1rem; }
     .stat-card { background: rgba(26,58,92,0.6); padding: 1rem; border-radius: 12px; text-align: center; }
-    .stat-card .value { font-size: 1.8rem; font-weight: bold; color: #c0c0c0; }
+    .stat-card .value { font-size: 1.8rem; font-weight: bold; color: #ffc107; }
 
     .admin-tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
     .admin-tab { background: rgba(13,33,55,0.8); border: 1px solid rgba(192,192,192,0.2); padding: 0.5rem 1rem; border-radius: 8px; color: #a0a0a0; cursor: pointer; font-size: 0.8rem; }
@@ -140,13 +136,30 @@
     <div class="main-content">
       <div id="pageDashboard" class="page active">
         <div class="dashboard-grid">
-          <div><div class="card"><div class="card-title">🏆 Tabla de Posiciones</div><div id="rankingList"></div></div></div>
-          <div><div class="card"><div class="card-title">📅 Próximos Partidos</div><div id="proximosPartidos"></div></div><div class="card"><div class="card-title">✅ Últimos Resultados</div><div id="ultimosResultados"></div></div></div>
+          <div>
+            <div class="card">
+              <div class="card-title">🏆 Tabla de Posiciones</div>
+              <div id="rankingList"></div>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-title">📅 Próximos Partidos</div>
+              <div id="proximosPartidos"></div>
+            </div>
+            <div class="card">
+              <div class="card-title">✅ Últimos Resultados</div>
+              <div id="ultimosResultados"></div>
+            </div>
+          </div>
         </div>
         <div class="stats-grid" id="statsGrid"></div>
       </div>
       <div id="pagePredicciones" class="page">
-        <div class="card"><div class="card-title">🎯 Mis Predicciones</div><div id="prediccionesList"></div></div>
+        <div class="card">
+          <div class="card-title">🎯 Mis Predicciones</div>
+          <div id="prediccionesList"></div>
+        </div>
       </div>
       <div id="pageAdmin" class="page">
         <div class="admin-tabs">
@@ -218,14 +231,9 @@
     let currentPage = 'dashboard';
     let equiposCache = [];
 
-    // ==================== FUNCIONES SUPABASE ====================
     async function fetchAPI(table, method = 'GET', body = null) {
       const url = `${SUPABASE_URL}/rest/v1/${table}`;
-      const headers = {
-        'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`,
-        'Content-Type': 'application/json'
-      };
+      const headers = { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' };
       const options = { method, headers };
       if (body) options.body = JSON.stringify(body);
       const response = await fetch(url, options);
@@ -289,7 +297,6 @@
       await fetchAPI('equipos', 'POST', { nombre, pin, activo: true });
     }
 
-    // ==================== CÁLCULO ====================
     function calcularPuntosPrediccion(predLocal, predVisit, resLocal, resVisit) {
       if (resLocal === undefined) return null;
       if (predLocal === resLocal && predVisit === resVisit) return CONFIG.ptsExacto;
@@ -315,23 +322,50 @@
             else if (pts === 2) puntos += pts;
           }
         }
-        ranking.push({ ...equipo, puntos, exactos });
+        ranking.push({ id: equipo.id, nombre: equipo.nombre, puntos, exactos });
       }
       ranking.sort((a, b) => b.puntos - a.puntos || b.exactos - a.exactos);
       return ranking;
     }
 
-    // ==================== RENDER ====================
     async function renderDashboard() {
       const ranking = await calcularRanking();
       const resultados = await cargarResultados();
-      document.getElementById('rankingList').innerHTML = `<table><thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>🎯</th></tr></thead><tbody>${ranking.map((eq,i)=>`<tr><td>${i+1} ${i===0?'🏆':''}${i===1?'🥈':''}${i===2?'🥉':''}</td><td>${eq.nombre}</td><td class="rank-pts">${eq.puntos}</td><td>${eq.exactos}</td></tr>`).join('')}</tbody><table>`;
+      
+      let rankingHtml = '<table><thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>🎯</th></tr></thead><tbody>';
+      if (ranking.length === 0) {
+        rankingHtml += '<tr><td colspan="4" style="text-align:center">Sin datos aún. Los equipos aparecerán cuando hagan predicciones.</td></tr>';
+      } else {
+        for (let i = 0; i < ranking.length; i++) {
+          const eq = ranking[i];
+          rankingHtml += `<tr><td><strong>${i+1}</strong> ${i===0?'🏆':''}${i===1?'🥈':''}${i===2?'🥉':''}</td><td>${eq.nombre}</td><td class="rank-pts">${eq.puntos}</td><td>${eq.exactos}</td></tr>`;
+        }
+      }
+      rankingHtml += '</tbody></table>';
+      document.getElementById('rankingList').innerHTML = rankingHtml;
+
       const proximos = PARTIDOS.filter(p => !resultados[p.id]).slice(0,5);
-      document.getElementById('proximosPartidos').innerHTML = proximos.map(p => `<div class="partido-item"><div class="partido-equipos"><span class="equipo-local">${p.local}</span><span class="vs">VS</span><span class="equipo-visita">${p.visita}</span></div><div style="font-size:0.7rem;color:#888;text-align:center">📅 ${p.fecha} · Grupo ${p.grupo}</div></div>`).join('') || '<div style="text-align:center;padding:20px">✅ Todos los partidos jugados</div>';
+      if (proximos.length === 0) {
+        document.getElementById('proximosPartidos').innerHTML = '<div style="text-align:center;padding:20px">✅ Todos los partidos jugados</div>';
+      } else {
+        document.getElementById('proximosPartidos').innerHTML = proximos.map(p => `<div class="partido-item"><div class="partido-equipos"><span class="equipo-local">${p.local}</span><span class="vs">VS</span><span class="equipo-visita">${p.visita}</span></div><div style="font-size:0.7rem;color:#888;text-align:center">📅 ${p.fecha} · Grupo ${p.grupo}</div></div>`).join('');
+      }
+
       const ultimos = PARTIDOS.filter(p => resultados[p.id]).slice(-5).reverse();
-      document.getElementById('ultimosResultados').innerHTML = ultimos.map(p => `<div class="partido-item"><div class="partido-equipos"><span class="equipo-local">${p.local}</span><span class="vs">${resultados[p.id].local} - ${resultados[p.id].visita}</span><span class="equipo-visita">${p.visita}</span></div><div style="font-size:0.7rem;color:#888;text-align:center">📅 ${p.fecha}</div></div>`).join('') || '<div style="text-align:center;padding:20px">📋 Sin resultados aún</div>';
+      if (ultimos.length === 0) {
+        document.getElementById('ultimosResultados').innerHTML = '<div style="text-align:center;padding:20px">📋 Sin resultados aún</div>';
+      } else {
+        document.getElementById('ultimosResultados').innerHTML = ultimos.map(p => `<div class="partido-item"><div class="partido-equipos"><span class="equipo-local">${p.local}</span><span class="vs">${resultados[p.id].local} - ${resultados[p.id].visita}</span><span class="equipo-visita">${p.visita}</span></div><div style="font-size:0.7rem;color:#888;text-align:center">📅 ${p.fecha}</div></div>`).join('');
+      }
+
+      const totalPartidos = Object.keys(resultados).length;
       const top = ranking[0] || { nombre: '-', puntos: 0, exactos: 0 };
-      document.getElementById('statsGrid').innerHTML = `<div class="stat-card"><div class="value">${top.nombre}</div><div>🏆 Líder</div></div><div class="stat-card"><div class="value">${top.puntos}</div><div>Puntos</div></div><div class="stat-card"><div class="value">${top.exactos}</div><div>🎯 Exactos</div></div>`;
+      document.getElementById('statsGrid').innerHTML = `
+        <div class="stat-card"><div class="value">${top.nombre}</div><div>🏆 Líder</div></div>
+        <div class="stat-card"><div class="value">${top.puntos}</div><div>Puntos</div></div>
+        <div class="stat-card"><div class="value">${top.exactos}</div><div>🎯 Exactos</div></div>
+        <div class="stat-card"><div class="value">${totalPartidos}</div><div>Partidos Jugados</div></div>
+      `;
     }
 
     async function renderPredicciones() {
@@ -370,15 +404,28 @@
       const visita = document.getElementById(`predV_${partidoId}`).value;
       if (local === '' || visita === '') { mostrarToast('❌ Ingresa ambos marcadores', 'error'); return; }
       await guardarPrediccionCloud(currentUser.id, partidoId, parseInt(local), parseInt(visita));
-      mostrarToast('✅ Predicción guardada (todos verán este resultado)');
+      mostrarToast('✅ Predicción guardada');
       renderPredicciones();
       renderDashboard();
     }
 
-    // ==================== ADMIN ====================
     async function renderAdminEquipos() {
       const equipos = equiposCache;
-      const html = `<div class="card"><div class="card-title">👥 Gestión de Equipos</div>${equipos.map(eq => `<div class="equipo-row"><input type="text" id="nombre_${eq.id}" value="${eq.nombre}" style="width:150px"><input type="password" id="pin_${eq.id}" value="${eq.pin}" style="width:80px"><span style="color:${eq.activo?'#6c9ebf':'#ff6b6b'}">${eq.activo?'✅ Activo':'❌ Inactivo'}</span><button class="btn btn-primary" onclick="guardarEquipo(${eq.id})">💾</button><button class="btn ${eq.activo?'btn-danger':'btn-success'}" onclick="toggleEquipo(${eq.id})">${eq.activo?'❌':'✅'}</button></div>`).join('')}<button class="btn btn-primary" style="margin-top:1rem" onclick="agregarEquipo()">+ Agregar Equipo</button></div>`;
+      let html = `<div class="card"><div class="card-title">👥 Gestión de Equipos</div>`;
+      if (equipos.length === 0) {
+        html += '<p>Cargando equipos...</p>';
+      } else {
+        for (const eq of equipos) {
+          html += `<div class="equipo-row">
+            <input type="text" id="nombre_${eq.id}" value="${eq.nombre}" style="width:150px">
+            <input type="password" id="pin_${eq.id}" value="${eq.pin}" style="width:80px">
+            <span style="color:${eq.activo?'#6c9ebf':'#ff6b6b'}">${eq.activo?'✅ Activo':'❌ Inactivo'}</span>
+            <button class="btn btn-primary" onclick="guardarEquipo(${eq.id})">💾</button>
+            <button class="btn ${eq.activo?'btn-danger':'btn-success'}" onclick="toggleEquipo(${eq.id})">${eq.activo?'❌ Desactivar':'✅ Activar'}</button>
+          </div>`;
+        }
+      }
+      html += `<button class="btn btn-primary" style="margin-top:1rem" onclick="agregarEquipo()">+ Agregar Equipo</button></div>`;
       document.getElementById('adminEquipos').innerHTML = html;
     }
 
@@ -398,7 +445,7 @@
       const visita = document.getElementById(`resV_${partidoId}`).value;
       if (local === '' || visita === '') { mostrarToast('❌ Ingresa ambos marcadores', 'error'); return; }
       await guardarResultadoCloud(partidoId, parseInt(local), parseInt(visita));
-      mostrarToast('✅ Resultado guardado (todos lo verán)');
+      mostrarToast('✅ Resultado guardado');
       renderAdminResultados();
       renderDashboard();
       if (currentUser && !currentUser.isAdmin) renderPredicciones();
@@ -424,7 +471,7 @@
       const nombre = document.getElementById(`nombre_${id}`).value;
       const pin = document.getElementById(`pin_${id}`).value;
       await guardarEquipoCloud(id, nombre, pin, true);
-      mostrarToast('✅ Equipo actualizado (todos lo verán)');
+      mostrarToast('✅ Equipo actualizado');
       await cargarEquipos();
       renderAdminEquipos();
       cargarEquiposLogin();
@@ -435,7 +482,7 @@
       const equipo = equiposCache.find(e => e.id === id);
       if (equipo) {
         await guardarEquipoCloud(id, equipo.nombre, equipo.pin, !equipo.activo);
-        mostrarToast(equipo.activo ? '✅ Equipo desactivado' : '✅ Equipo activado');
+        mostrarToast(equipo.activo ? '❌ Equipo desactivado' : '✅ Equipo activado');
         await cargarEquipos();
         renderAdminEquipos();
         cargarEquiposLogin();
@@ -452,13 +499,11 @@
       cargarEquiposLogin();
     }
 
-    // ==================== ADMIN - ADHERENCIA, BONOS, PENALIZACIONES (simplificado) ====================
     function renderAdminAdherencia() { document.getElementById('adminAdherencia').innerHTML = '<div class="card"><div class="card-title">📋 Adherencia</div><p>Función en desarrollo</p></div>'; }
     function renderAdminBonos() { document.getElementById('adminBonos').innerHTML = '<div class="card"><div class="card-title">⭐ Bonos</div><p>Función en desarrollo</p></div>'; }
     function renderAdminPenalizaciones() { document.getElementById('adminPenalizaciones').innerHTML = '<div class="card"><div class="card-title">🚫 Penalizaciones</div><p>Función en desarrollo</p></div>'; }
     function renderAdminPrediccionesAdmin() { document.getElementById('adminPrediccionesAdmin').innerHTML = '<div class="card"><div class="card-title">👁️ Ver Predicciones</div><p>Función en desarrollo</p></div>'; }
 
-    // ==================== NAVEGACIÓN ====================
     function showPage(page) {
       currentPage = page;
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -497,7 +542,6 @@
       }
     }
 
-    // ==================== AUTENTICACIÓN ====================
     async function doLogin() {
       const equipoId = parseInt(document.getElementById('loginEquipo').value);
       const pin = document.getElementById('loginPin').value;
@@ -547,7 +591,6 @@
     window.hideAdminLogin = hideAdminLogin;
     window.logout = logout;
 
-    // INICIO
     window.addEventListener('DOMContentLoaded', async () => {
       await cargarEquipos();
       await cargarEquiposLogin();
