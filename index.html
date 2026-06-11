@@ -6,7 +6,7 @@
   <title>⚽ Mundialito GCA 2026 - Tiempo Real</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0a0a0a; color: #e0e0e0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #0a0a0a; color: #e0e0e0; }
 
     .splash-screen {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -16,10 +16,10 @@
     }
     .splash-content { text-align: center; }
     .splash-ball { font-size: 80px; animation: bounce 1s infinite, spin 2s linear infinite; display: inline-block; }
-    .splash-title { font-size: 3rem; color: #c0c0c0; margin-top: 1rem; letter-spacing: 4px; }
-    .splash-sub { color: #a0a0a0; margin-top: 0.5rem; letter-spacing: 2px; }
+    .splash-title { font-size: 3rem; color: #c0c0c0; margin-top: 1rem; }
+    .splash-sub { color: #a0a0a0; }
     .splash-bar { width: 200px; height: 3px; background: rgba(192,192,192,0.2); margin: 2rem auto 0; border-radius: 99px; overflow: hidden; }
-    .splash-bar-fill { width: 0%; height: 100%; background: #c0c0c0; animation: fillBar 2.5s forwards; border-radius: 99px; }
+    .splash-bar-fill { width: 0%; height: 100%; background: #c0c0c0; animation: fillBar 2.5s forwards; }
     @keyframes bounce { 0%,100%{transform:translateY(0);}50%{transform:translateY(-20px);} }
     @keyframes spin { from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
     @keyframes fillBar { to { width: 100%; } }
@@ -33,15 +33,14 @@
     .login-card button:hover { background: #4a7c9e; color: white; }
     .error { color: #ff6b6b; margin-top: 10px; display: none; }
 
-    .app-header { background: #0d2137; padding: 0.8rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(192,192,192,0.3); flex-wrap: wrap; gap: 0.5rem; }
+    .app-header { background: #0d2137; padding: 0.8rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #c0c0c0; flex-wrap: wrap; gap: 0.5rem; }
     .logo { font-size: 1.3rem; font-weight: bold; color: #c0c0c0; }
-    .logo span { color: #4a7c9e; }
     .nav-buttons { display: flex; gap: 0.3rem; flex-wrap: wrap; }
     .nav-btn { background: transparent; border: none; color: #a0a0a0; padding: 0.4rem 0.8rem; cursor: pointer; border-radius: 8px; font-size: 0.85rem; }
     .nav-btn:hover { background: rgba(74,124,158,0.3); color: #c0c0c0; }
     .nav-btn.active { background: #4a7c9e; color: white; }
     .user-info { display: flex; align-items: center; gap: 0.8rem; }
-    .user-badge { background: rgba(74,124,158,0.3); padding: 0.3rem 0.8rem; border-radius: 20px; color: #c0c0c0; font-size: 0.85rem; }
+    .user-badge { background: rgba(74,124,158,0.3); padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; }
     .logout-btn { background: #dc3545; border: none; padding: 0.3rem 1rem; border-radius: 8px; color: white; cursor: pointer; }
 
     .main-content { padding: 1rem; max-width: 1400px; margin: 0 auto; }
@@ -56,34 +55,33 @@
     table { width: 100%; border-collapse: collapse; }
     th, td { padding: 8px; text-align: left; border-bottom: 1px solid rgba(192,192,192,0.1); font-size: 0.85rem; }
     th { color: #c0c0c0; }
-    tr:hover { background: rgba(74,124,158,0.2); }
     .rank-pts { color: #ffc107; font-weight: bold; font-size: 1.2rem; }
 
     .partido-item { background: rgba(13,33,55,0.6); border-radius: 8px; padding: 0.8rem; margin-bottom: 0.5rem; border: 1px solid rgba(192,192,192,0.15); }
     .partido-equipos { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
     .equipo-local, .equipo-visita { flex: 1; font-weight: bold; font-size: 0.85rem; }
     .equipo-local { text-align: right; }
-    .vs { color: #c0c0c0; background: rgba(74,124,158,0.3); padding: 2px 8px; border-radius: 20px; }
+    .vs { color: #ffc107; background: rgba(74,124,158,0.3); padding: 2px 8px; border-radius: 20px; }
     .pred-inputs { display: flex; justify-content: center; gap: 0.5rem; margin-top: 0.5rem; }
     .pred-inputs input { width: 55px; padding: 6px; text-align: center; background: rgba(13,33,55,0.8); border: 1px solid rgba(192,192,192,0.3); border-radius: 8px; color: white; font-size: 1rem; }
-    .pred-resultado { text-align: center; margin-top: 0.5rem; color: #c0c0c0; }
-    .grupo-titulo { font-size: 1.1rem; color: #c0c0c0; margin: 1rem 0 0.5rem; padding-left: 0.5rem; border-left: 3px solid #4a7c9e; }
+    .pred-resultado { text-align: center; margin-top: 0.5rem; }
+    .grupo-titulo { font-size: 1.1rem; color: #ffc107; margin: 1rem 0 0.5rem; padding-left: 0.5rem; border-left: 3px solid #ffc107; }
     .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-top: 1rem; }
     .stat-card { background: rgba(26,58,92,0.6); padding: 1rem; border-radius: 12px; text-align: center; }
     .stat-card .value { font-size: 1.8rem; font-weight: bold; color: #ffc107; }
 
     .admin-tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
-    .admin-tab { background: rgba(13,33,55,0.8); border: 1px solid rgba(192,192,192,0.2); padding: 0.5rem 1rem; border-radius: 8px; color: #a0a0a0; cursor: pointer; }
+    .admin-tab { background: rgba(13,33,55,0.8); border: 1px solid #555; padding: 0.5rem 1rem; border-radius: 8px; color: #a0a0a0; cursor: pointer; }
     .admin-tab.active { background: #4a7c9e; color: white; }
     .admin-panel { display: none; }
     .admin-panel.active { display: block; }
     .equipo-row { display: flex; gap: 0.5rem; margin-bottom: 0.5rem; align-items: center; flex-wrap: wrap; }
-    .equipo-row input { padding: 6px; background: rgba(13,33,55,0.8); border: 1px solid rgba(192,192,192,0.3); border-radius: 6px; color: white; }
+    .equipo-row input { padding: 6px; background: rgba(13,33,55,0.8); border: 1px solid #555; border-radius: 6px; color: white; }
     .btn { padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 0.75rem; }
     .btn-primary { background: #4a7c9e; color: white; }
     .btn-danger { background: #dc3545; color: white; }
     .btn-success { background: #28a745; color: white; }
-    .resultado-input { width: 50px; padding: 5px; text-align: center; background: rgba(13,33,55,0.8); border: 1px solid rgba(192,192,192,0.3); border-radius: 6px; color: white; }
+    .resultado-input { width: 50px; padding: 5px; text-align: center; background: rgba(13,33,55,0.8); border: 1px solid #555; border-radius: 6px; color: white; }
     .toast { position: fixed; bottom: 20px; right: 20px; background: #28a745; color: white; padding: 10px 20px; border-radius: 8px; z-index: 1000; animation: fadeOut 3s forwards; }
     .toast.error { background: #dc3545; }
     @keyframes fadeOut { 0% { opacity: 1; } 70% { opacity: 1; } 100% { opacity: 0; visibility: hidden; } }
@@ -169,7 +167,6 @@
     const SUPABASE_URL = 'https://rbkopqwvzignqimcwmsi.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_81_d79c5c5bwZLs7MgwbgWg_1klwj_';
 
-    // ==================== PARTIDOS ====================
     const PARTIDOS = [
       { id: 1, grupo: 'A', fecha: '11/06/2026', local: 'México', visita: 'Sudáfrica' },
       { id: 2, grupo: 'A', fecha: '11/06/2026', local: 'Corea del Sur', visita: 'República Checa' },
@@ -209,7 +206,6 @@
       { id: 36, grupo: 'F', fecha: '25/06/2026', local: 'Túnez', visita: 'Países Bajos' }
     ];
 
-    const CONFIG = { adminPass: 'admin2026', ptsExacto: 5, ptsGanador: 2 };
     let currentUser = null;
     let currentPage = 'dashboard';
     let equiposCache = [];
@@ -220,14 +216,13 @@
       const options = { method, headers };
       if (body && (method === 'POST' || method === 'PATCH')) options.body = JSON.stringify(body);
       const res = await fetch(url, options);
-      if (!res.ok) throw new Error(`Error ${res.status}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (method === 'DELETE') return true;
       return res.json();
     }
 
     async function cargarEquipos() {
-      try {
-        equiposCache = await apiFetch('equipos');
-      } catch(e) { console.error('Error cargando equipos:', e); equiposCache = []; }
+      try { equiposCache = await apiFetch('equipos'); } catch(e) { console.error(e); equiposCache = []; }
       return equiposCache;
     }
 
@@ -257,7 +252,7 @@
         } else {
           await apiFetch('predicciones', 'POST', { equipo_id: equipoId, partido_id: partidoId, local, visita });
         }
-      } catch(e) { console.error('Error guardando predicción:', e); }
+      } catch(e) { console.error(e); }
     }
 
     async function guardarResultadoCloud(partidoId, local, visita) {
@@ -268,11 +263,11 @@
         } else {
           await apiFetch('resultados', 'POST', { partido_id: partidoId, local, visita });
         }
-      } catch(e) { console.error('Error guardando resultado:', e); }
+      } catch(e) { console.error(e); }
     }
 
     async function borrarResultadoCloud(partidoId) {
-      try { await apiFetch(`resultados?partido_id=eq.${partidoId}`, 'DELETE'); } catch(e) { console.error('Error borrando resultado:', e); }
+      try { await apiFetch(`resultados?partido_id=eq.${partidoId}`, 'DELETE'); } catch(e) { console.error(e); }
     }
 
     async function borrarTodosResultadosCloud() {
@@ -283,19 +278,19 @@
     }
 
     async function guardarEquipoCloud(id, nombre, pin, activo) {
-      try { await apiFetch(`equipos?id=eq.${id}`, 'PATCH', { nombre, pin, activo }); } catch(e) { console.error('Error guardando equipo:', e); }
+      try { await apiFetch(`equipos?id=eq.${id}`, 'PATCH', { nombre, pin, activo }); } catch(e) { console.error(e); }
     }
 
     async function agregarEquipoCloud(nombre, pin) {
-      try { await apiFetch('equipos', 'POST', { nombre, pin, activo: true }); } catch(e) { console.error('Error agregando equipo:', e); }
+      try { await apiFetch('equipos', 'POST', { nombre, pin, activo: true }); } catch(e) { console.error(e); }
     }
 
     function calcularPuntos(predLocal, predVisit, resLocal, resVisit) {
       if (resLocal === undefined) return 0;
-      if (predLocal === resLocal && predVisit === resVisit) return CONFIG.ptsExacto;
+      if (predLocal === resLocal && predVisit === resVisit) return 5;
       const predGanador = predLocal > predVisit ? 'L' : (predLocal < predVisit ? 'V' : 'E');
       const resGanador = resLocal > resVisit ? 'L' : (resLocal < resVisit ? 'V' : 'E');
-      return predGanador === resGanador ? CONFIG.ptsGanador : 0;
+      return predGanador === resGanador ? 2 : 0;
     }
 
     async function calcularRanking() {
@@ -305,9 +300,9 @@
       for (const equipo of equipos) {
         const preds = await cargarPrediccionesEquipo(equipo.id);
         let puntos = 0, exactos = 0;
-        for (const partido of PARTIDOS) {
-          const res = resultados[partido.id];
-          const pred = preds[partido.id];
+        for (const p of PARTIDOS) {
+          const res = resultados[p.id];
+          const pred = preds[p.id];
           if (res && pred) {
             const pts = calcularPuntos(pred.local, pred.visita, res.local, res.visita);
             if (pts === 5) { puntos += pts; exactos++; }
@@ -323,40 +318,27 @@
     async function renderDashboard() {
       const ranking = await calcularRanking();
       const resultados = await cargarResultados();
-      
-      let html = '<table><thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>🎯</th></tr></thead><tbody>';
-      if (ranking.length === 0) {
-        html += '<tr><td colspan="4" style="text-align:center">Sin datos. Agrega resultados desde Admin</td></tr>';
-      } else {
-        for (let i = 0; i < ranking.length; i++) {
-          const eq = ranking[i];
-          html += `<tr><td><strong>${i+1}</strong> ${i===0?'🏆':''}${i===1?'🥈':''}${i===2?'🥉':''}</td><td>${eq.nombre}</td><td class="rank-pts">${eq.puntos}</td><td>${eq.exactos}</td></tr>`;
-        }
+      let html = '</table><thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>🎯</th></tr></thead><tbody>';
+      for (let i = 0; i < ranking.length; i++) {
+        const eq = ranking[i];
+        html += `<tr><td>${i+1} ${i===0?'🏆':''}${i===1?'🥈':''}${i===2?'🥉':''}</td><td>${eq.nombre}</td><td class="rank-pts">${eq.puntos}</td><td>${eq.exactos}</td></tr>`;
       }
+      if (ranking.length === 0) html += '<tr><td colspan="4">Sin datos. Agrega resultados desde Admin</td></tr>';
       html += '</tbody></table>';
       document.getElementById('rankingList').innerHTML = html;
 
       const proximos = PARTIDOS.filter(p => !resultados[p.id]).slice(0,5);
-      if (proximos.length === 0) {
-        document.getElementById('proximosPartidos').innerHTML = '<div style="text-align:center;padding:20px">✅ Todos jugados</div>';
-      } else {
-        document.getElementById('proximosPartidos').innerHTML = proximos.map(p => `<div class="partido-item"><div class="partido-equipos"><span class="equipo-local">${p.local}</span><span class="vs">VS</span><span class="equipo-visita">${p.visita}</span></div><div style="font-size:0.7rem;color:#888;text-align:center">📅 ${p.fecha} · Grupo ${p.grupo}</div></div>`).join('');
-      }
+      document.getElementById('proximosPartidos').innerHTML = proximos.map(p => `<div class="partido-item"><div class="partido-equipos"><span class="equipo-local">${p.local}</span><span class="vs">VS</span><span class="equipo-visita">${p.visita}</span></div><div style="font-size:0.7rem;color:#888;text-align:center">📅 ${p.fecha} · Grupo ${p.grupo}</div></div>`).join('') || '<div style="text-align:center;padding:20px">✅ Todos jugados</div>';
 
       const ultimos = PARTIDOS.filter(p => resultados[p.id]).slice(-5).reverse();
-      if (ultimos.length === 0) {
-        document.getElementById('ultimosResultados').innerHTML = '<div style="text-align:center;padding:20px">📋 Sin resultados</div>';
-      } else {
-        document.getElementById('ultimosResultados').innerHTML = ultimos.map(p => `<div class="partido-item"><div class="partido-equipos"><span class="equipo-local">${p.local}</span><span class="vs">${resultados[p.id].local} - ${resultados[p.id].visita}</span><span class="equipo-visita">${p.visita}</span></div><div style="font-size:0.7rem;color:#888;text-align:center">📅 ${p.fecha}</div></div>`).join('');
-      }
+      document.getElementById('ultimosResultados').innerHTML = ultimos.map(p => `<div class="partido-item"><div class="partido-equipos"><span class="equipo-local">${p.local}</span><span class="vs">${resultados[p.id].local} - ${resultados[p.id].visita}</span><span class="equipo-visita">${p.visita}</span></div><div style="font-size:0.7rem;color:#888;text-align:center">📅 ${p.fecha}</div></div>`).join('') || '<div style="text-align:center;padding:20px">📋 Sin resultados</div>';
 
       const top = ranking[0] || { nombre: '-', puntos: 0, exactos: 0 };
-      const totalPartidos = Object.keys(resultados).length;
       document.getElementById('statsGrid').innerHTML = `
         <div class="stat-card"><div class="value">${top.nombre}</div><div>🏆 Líder</div></div>
         <div class="stat-card"><div class="value">${top.puntos}</div><div>Puntos</div></div>
         <div class="stat-card"><div class="value">${top.exactos}</div><div>🎯 Exactos</div></div>
-        <div class="stat-card"><div class="value">${totalPartidos}</div><div>Jugados</div></div>
+        <div class="stat-card"><div class="value">${Object.keys(resultados).length}</div><div>Jugados</div></div>
       `;
     }
 
@@ -378,11 +360,11 @@
           html += `<div class="partido-item"><div class="partido-equipos"><span class="equipo-local">${p.local}</span><span class="vs">VS</span><span class="equipo-visita">${p.visita}</span></div><div style="font-size:0.7rem;color:#888;text-align:center">📅 ${p.fecha} · Grupo ${p.grupo}</div>`;
           if (res) {
             const pts = calcularPuntos(pred.local, pred.visita, res.local, res.visita);
-            html += `<div class="pred-resultado">🔒 ${pred.local||'?'} - ${pred.visita||'?'}<br><span style="color:#6c9ebf">${pts} pts</span></div>`;
+            html += `<div class="pred-resultado">🔒 ${pred.local||'?'} - ${pred.visita||'?'} (${pts} pts)</div>`;
           } else if (pred.local !== undefined) {
             html += `<div class="pred-resultado">✅ ${pred.local} - ${pred.visita}</div>`;
           } else {
-            html += `<div class="pred-inputs"><input type="number" id="predL_${p.id}" placeholder="0" min="0" max="20" onchange="guardarPrediccion(${p.id})"><span>-</span><input type="number" id="predV_${p.id}" placeholder="0" min="0" max="20" onchange="guardarPrediccion(${p.id})"></div>`;
+            html += `<div class="pred-inputs"><input type="number" id="predL_${p.id}" placeholder="0" onchange="guardarPrediccion(${p.id})"><span>-</span><input type="number" id="predV_${p.id}" placeholder="0" onchange="guardarPrediccion(${p.id})"></div>`;
           }
           html += `</div>`;
         }
@@ -396,7 +378,7 @@
       const visita = document.getElementById(`predV_${partidoId}`).value;
       if (local === '' || visita === '') { mostrarToast('❌ Ingresa ambos', 'error'); return; }
       await guardarPrediccionCloud(currentUser.id, partidoId, parseInt(local), parseInt(visita));
-      mostrarToast('✅ Guardado');
+      mostrarToast('✅ Guardado (todos lo ven)');
       renderPredicciones();
       renderDashboard();
     }
@@ -405,7 +387,7 @@
       let html = `<div class="card"><div class="card-title">👥 Equipos</div>`;
       for (const eq of equiposCache) {
         html += `<div class="equipo-row">
-          <input type="text" id="nombre_${eq.id}" value="${eq.nombre}" style="width:150px">
+          <input type="text" id="nom_${eq.id}" value="${eq.nombre}" style="width:150px">
           <input type="password" id="pin_${eq.id}" value="${eq.pin}" style="width:80px">
           <span>${eq.activo?'✅ Activo':'❌ Inactivo'}</span>
           <button class="btn btn-primary" onclick="guardarEquipo(${eq.id})">💾</button>
@@ -432,7 +414,7 @@
       const visita = document.getElementById(`resV_${partidoId}`).value;
       if (local === '' || visita === '') { mostrarToast('❌ Ingresa ambos', 'error'); return; }
       await guardarResultadoCloud(partidoId, parseInt(local), parseInt(visita));
-      mostrarToast('✅ Resultado guardado');
+      mostrarToast('✅ Resultado guardado (todos lo ven)');
       renderAdminResultados();
       renderDashboard();
       if (currentUser && !currentUser.isAdmin) renderPredicciones();
@@ -455,10 +437,10 @@
     }
 
     async function guardarEquipo(id) {
-      const nombre = document.getElementById(`nombre_${id}`).value;
+      const nombre = document.getElementById(`nom_${id}`).value;
       const pin = document.getElementById(`pin_${id}`).value;
       await guardarEquipoCloud(id, nombre, pin, true);
-      mostrarToast('✅ Equipo actualizado');
+      mostrarToast('✅ Equipo actualizado (todos lo ven)');
       await cargarEquipos();
       renderAdminEquipos();
       cargarEquiposLogin();
@@ -489,7 +471,15 @@
     function renderAdminAdherencia() { document.getElementById('adminAdherencia').innerHTML = '<div class="card"><div class="card-title">📋 Adherencia</div><p>Próximamente</p></div>'; }
     function renderAdminBonos() { document.getElementById('adminBonos').innerHTML = '<div class="card"><div class="card-title">⭐ Bonos</div><p>Próximamente</p></div>'; }
     function renderAdminPenalizaciones() { document.getElementById('adminPenalizaciones').innerHTML = '<div class="card"><div class="card-title">🚫 Penalizaciones</div><p>Próximamente</p></div>'; }
-    function renderAdminPrediccionesAdmin() { document.getElementById('adminPrediccionesAdmin').innerHTML = '<div class="card"><div class="card-title">👁️ Ver Predicciones</div><p>Próximamente</p></div>'; }
+    async function renderAdminPrediccionesAdmin() {
+      let html = `<div class="card"><div class="card-title">👁️ Ver Predicciones</div>`;
+      for (const eq of equiposCache) {
+        const preds = await cargarPrediccionesEquipo(eq.id);
+        html += `<div class="partido-item"><strong>${eq.nombre}</strong> - ${Object.keys(preds).length} predicciones</div>`;
+      }
+      html += `</div>`;
+      document.getElementById('adminPrediccionesAdmin').innerHTML = html;
+    }
 
     function showPage(page) {
       currentPage = page;
@@ -522,7 +512,7 @@
 
     function doAdminLogin() {
       const pass = document.getElementById('adminPass').value;
-      if (pass !== CONFIG.adminPass) { document.getElementById('adminError').style.display = 'block'; return; }
+      if (pass !== 'admin2026') { document.getElementById('adminError').style.display = 'block'; return; }
       document.getElementById('adminError').style.display = 'none';
       currentUser = { id: 0, nombre: 'Admin', isAdmin: true };
       document.getElementById('adminLoginScreen').style.display = 'none';
@@ -536,14 +526,24 @@
     function logout() { currentUser = null; document.getElementById('app').style.display = 'none'; document.getElementById('loginScreen').style.display = 'flex'; }
     function showAdminLogin() { document.getElementById('loginScreen').style.display = 'none'; document.getElementById('adminLoginScreen').style.display = 'flex'; }
     function hideAdminLogin() { document.getElementById('adminLoginScreen').style.display = 'none'; document.getElementById('loginScreen').style.display = 'flex'; }
-    function actualizarMobileNav() { const mobileNav = document.getElementById('mobileNav'); const pages = ['dashboard','predicciones']; if (currentUser?.isAdmin) pages.push('admin'); mobileNav.innerHTML = pages.map(p => `<button onclick="showPage('${p}')" class="${currentPage===p?'active':''}">${p==='dashboard'?'📊':p==='predicciones'?'🎯':'⚙️'}<br>${p}</button>`).join(''); }
+    function actualizarMobileNav() { const mobileNav = document.getElementById('mobileNav'); const pages = ['dashboard','predicciones']; if(currentUser?.isAdmin) pages.push('admin'); mobileNav.innerHTML = pages.map(p => `<button onclick="showPage('${p}')" class="${currentPage===p?'active':''}">${p==='dashboard'?'📊':p==='predicciones'?'🎯':'⚙️'}<br>${p}</button>`).join(''); }
     async function cargarEquiposLogin() { const select = document.getElementById('loginEquipo'); select.innerHTML = '<option value="">-- Selecciona --</option>' + equiposCache.filter(e=>e.activo).map(e=>`<option value="${e.id}">${e.nombre}</option>`).join(''); }
     function mostrarToast(m, t='success') { const toast = document.createElement('div'); toast.className = `toast ${t==='error'?'error':''}`; toast.textContent = m; document.body.appendChild(toast); setTimeout(()=>toast.remove(),3000); }
 
-    window.guardarPrediccion = guardarPrediccion; window.guardarResultado = guardarResultado; window.borrarResultado = borrarResultado; window.borrarTodosResultados = borrarTodosResultados;
-    window.guardarEquipo = guardarEquipo; window.toggleEquipo = toggleEquipo; window.agregarEquipo = agregarEquipo;
-    window.showPage = showPage; window.showAdminTab = showAdminTab; window.doLogin = doLogin; window.doAdminLogin = doAdminLogin;
-    window.showAdminLogin = showAdminLogin; window.hideAdminLogin = hideAdminLogin; window.logout = logout;
+    window.guardarPrediccion = guardarPrediccion;
+    window.guardarResultado = guardarResultado;
+    window.borrarResultado = borrarResultado;
+    window.borrarTodosResultados = borrarTodosResultados;
+    window.guardarEquipo = guardarEquipo;
+    window.toggleEquipo = toggleEquipo;
+    window.agregarEquipo = agregarEquipo;
+    window.showPage = showPage;
+    window.showAdminTab = showAdminTab;
+    window.doLogin = doLogin;
+    window.doAdminLogin = doAdminLogin;
+    window.showAdminLogin = showAdminLogin;
+    window.hideAdminLogin = hideAdminLogin;
+    window.logout = logout;
 
     window.addEventListener('DOMContentLoaded', async () => {
       await cargarEquipos();
