@@ -15,9 +15,87 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: #0a0a0a;
       color: #e0e0e0;
+      overflow-x: hidden;
     }
 
-    /* Login - Colores GCA Technologies (Azules + Plateado) */
+    /* SPLASH SCREEN - Pantalla de bienvenida animada */
+    .splash-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #0d2137 0%, #1a3a5c 50%, #2c5282 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+    }
+    .splash-content {
+      text-align: center;
+      animation: fadeInUp 1s ease;
+    }
+    .splash-ball {
+      font-size: 80px;
+      animation: bounce 1s ease infinite, spin 2s linear infinite;
+      display: inline-block;
+    }
+    .splash-title {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-size: 3rem;
+      font-weight: bold;
+      color: #c0c0c0;
+      margin-top: 1rem;
+      letter-spacing: 4px;
+    }
+    .splash-sub {
+      color: #a0a0a0;
+      margin-top: 0.5rem;
+      letter-spacing: 2px;
+    }
+    .splash-bar {
+      width: 200px;
+      height: 3px;
+      background: rgba(192, 192, 192, 0.2);
+      margin: 2rem auto 0;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .splash-bar-fill {
+      width: 0%;
+      height: 100%;
+      background: #c0c0c0;
+      animation: fillBar 2.5s ease forwards;
+      border-radius: 99px;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    @keyframes fillBar {
+      to { width: 100%; }
+    }
+    .splash-screen.hide {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    /* Login - Colores GCA Technologies */
     .login-container {
       min-height: 100vh;
       display: flex;
@@ -72,7 +150,7 @@
     }
     .error { color: #ff6b6b; margin-top: 10px; display: none; }
 
-    /* App Header - Colores GCA */
+    /* App Header */
     .app-header {
       background: linear-gradient(135deg, #0d2137, #1a3a5c);
       padding: 0.8rem 2rem;
@@ -469,8 +547,18 @@
   </style>
 </head>
 <body>
-  <!-- Pantalla de Login -->
-  <div id="loginScreen" class="login-container">
+  <!-- SPLASH SCREEN - Pantalla de bienvenida -->
+  <div id="splashScreen" class="splash-screen">
+    <div class="splash-content">
+      <div class="splash-ball">⚽</div>
+      <h1 class="splash-title">MUNDIALITO GCA</h1>
+      <p class="splash-sub">GCA Technologies</p>
+      <div class="splash-bar"><div class="splash-bar-fill"></div></div>
+    </div>
+  </div>
+
+  <!-- Pantalla de Login (oculta inicialmente) -->
+  <div id="loginScreen" class="login-container" style="display: none;">
     <div class="login-card">
       <h1>⚽ MUNDIALITO GCA 2026</h1>
       <p style="margin-bottom: 1rem; color: #a0a0a0;">GCA Technologies</p>
@@ -535,7 +623,7 @@
         <div class="stats-grid" id="statsGrid"></div>
       </div>
 
-      <!-- Predicciones (solo para equipos normales - SIN BOTONES DE BORRAR) -->
+      <!-- Predicciones -->
       <div id="pagePredicciones" class="page">
         <div class="card">
           <div class="card-title">🎯 Mis Predicciones</div>
@@ -546,7 +634,7 @@
         </div>
       </div>
 
-      <!-- Admin (solo para administrador) -->
+      <!-- Admin -->
       <div id="pageAdmin" class="page">
         <div class="admin-tabs">
           <button class="admin-tab active" onclick="showAdminTab('equipos')">👥 Equipos</button>
@@ -641,7 +729,6 @@
     let currentUser = null;
     let currentPage = 'dashboard';
 
-    // ==================== ALMACENAMIENTO ====================
     function saveData() {
       localStorage.setItem('gca_equipos', JSON.stringify(equipos));
       localStorage.setItem('gca_resultados', JSON.stringify(resultados));
@@ -667,34 +754,24 @@
       if (savedPenalizaciones) penalizaciones = JSON.parse(savedPenalizaciones);
     }
 
-    // ==================== CÁLCULO DE PUNTOS ====================
     function calcularPuntosPrediccion(predLocal, predVisit, resLocal, resVisit) {
       if (resLocal === undefined || resVisit === undefined) return null;
-      
       if (predLocal === resLocal && predVisit === resVisit) return CONFIG.ptsExacto;
-      
       const predGanador = predLocal > predVisit ? 'L' : (predLocal < predVisit ? 'V' : 'E');
       const resGanador = resLocal > resVisit ? 'L' : (resLocal < resVisit ? 'V' : 'E');
-      
       if (predGanador === resGanador) return CONFIG.ptsGanador;
-      
       return 0;
     }
 
     function calcularTotalPuntos() {
       const ranking = [];
-      
       for (const equipo of equipos) {
         if (!equipo.activo) continue;
-        
-        let puntosPrediccion = 0;
-        let exactos = 0;
+        let puntosPrediccion = 0, exactos = 0;
         const predsEquipo = predicciones[equipo.id] || {};
-        
         for (const partido of PARTIDOS) {
           const resultado = resultados[partido.id];
           const prediccion = predsEquipo[partido.id];
-          
           if (resultado && prediccion && prediccion.local !== undefined && prediccion.visita !== undefined) {
             const pts = calcularPuntosPrediccion(prediccion.local, prediccion.visita, resultado.local, resultado.visita);
             if (pts !== null) {
@@ -703,145 +780,54 @@
             }
           }
         }
-        
         let puntosAdherencia = 0;
         const adhEquipo = adherencia[equipo.id] || {};
         for (const fecha in adhEquipo) puntosAdherencia += adhEquipo[fecha];
-        
         let puntosBonos = 0;
         for (const bono of bonos) if (bono.equipoId === equipo.id) puntosBonos += bono.puntos;
-        
         let puntosPenalizaciones = 0;
         for (const penal of penalizaciones) if (penal.equipoId === equipo.id) puntosPenalizaciones += penal.puntos;
-        
         const total = puntosPrediccion + puntosAdherencia + puntosBonos + puntosPenalizaciones;
-        
-        ranking.push({
-          id: equipo.id,
-          nombre: equipo.nombre,
-          puntosPrediccion,
-          puntosAdherencia,
-          puntosBonos,
-          puntosPenalizaciones,
-          total,
-          exactos,
-          totalPredicciones: Object.keys(predsEquipo).length
-        });
+        ranking.push({ id: equipo.id, nombre: equipo.nombre, puntosPrediccion, puntosAdherencia, puntosBonos, puntosPenalizaciones, total, exactos });
       }
-      
-      ranking.sort((a, b) => b.total - a.total || b.exactos - a.exactos || b.puntosAdherencia - a.puntosAdherencia);
+      ranking.sort((a, b) => b.total - a.total || b.exactos - a.exactos);
       return ranking;
     }
 
-    // ==================== RENDERIZADO DASHBOARD ====================
     function renderDashboard() {
       const ranking = calcularTotalPuntos();
-      const rankingHTML = `
-        <table>
-          <thead><tr><th>#</th><th>Equipo</th><th>Total</th><th>Pred</th><th>Adh</th><th>Bonus</th><th>Pen</th><th>🎯</th></tr></thead>
-          <tbody>
-            ${ranking.map((eq, i) => `
-              <tr>
-                <td><strong>${i+1}</strong> ${i===0?'🏆':''}${i===1?'🥈':''}${i===2?'🥉':''}</td>
-                <td>${eq.nombre}</td>
-                <td style="color:#c0c0c0; font-weight:bold">${eq.total}</td>
-                <td style="color:#6c9ebf">${eq.puntosPrediccion}</td>
-                <td style="color:#6c9ebf">${eq.puntosAdherencia}</td>
-                <td style="color:#c0c0c0">${eq.puntosBonos}</td>
-                <td style="color:#ff6b6b">${eq.puntosPenalizaciones}</td>
-                <td>${eq.exactos}</td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
-      `;
+      const rankingHTML = `<table><thead><tr><th>#</th><th>Equipo</th><th>Total</th><th>Pred</th><th>Adh</th><th>Bonus</th><th>Pen</th><th>🎯</th></tr></thead><tbody>${ranking.map((eq, i) => `<tr><td>${i+1} ${i===0?'🏆':''}${i===1?'🥈':''}${i===2?'🥉':''}</td><td>${eq.nombre}</td><td style="color:#c0c0c0;font-weight:bold">${eq.total}</td><td style="color:#6c9ebf">${eq.puntosPrediccion}</td><td style="color:#6c9ebf">${eq.puntosAdherencia}</td><td style="color:#c0c0c0">${eq.puntosBonos}</td><td style="color:#ff6b6b">${eq.puntosPenalizaciones}</td><td>${eq.exactos}</td></tr>`).join('')}</tbody></table>`;
       document.getElementById('rankingList').innerHTML = rankingHTML;
-
       const proximos = PARTIDOS.filter(p => !resultados[p.id]).slice(0, 5);
-      document.getElementById('proximosPartidos').innerHTML = proximos.map(p => `
-        <div class="partido-item">
-          <div class="partido-equipos">
-            <span class="equipo-local">${p.local}</span>
-            <span class="vs">VS</span>
-            <span class="equipo-visita">${p.visita}</span>
-          </div>
-          <div style="font-size:0.7rem; color:#888; text-align:center; margin-top:5px">📅 ${p.fecha} · Grupo ${p.grupo}</div>
-        </div>
-      `).join('') || '<div style="text-align:center; padding:20px">✅ ¡Todos los partidos jugados!</div>';
-
+      document.getElementById('proximosPartidos').innerHTML = proximos.map(p => `<div class="partido-item"><div class="partido-equipos"><span class="equipo-local">${p.local}</span><span class="vs">VS</span><span class="equipo-visita">${p.visita}</span></div><div style="font-size:0.7rem;color:#888;text-align:center;margin-top:5px">📅 ${p.fecha} · Grupo ${p.grupo}</div></div>`).join('') || '<div style="text-align:center;padding:20px">✅ ¡Todos los partidos jugados!</div>';
       const ultimos = PARTIDOS.filter(p => resultados[p.id]).slice(-5).reverse();
-      document.getElementById('ultimosResultados').innerHTML = ultimos.map(p => `
-        <div class="partido-item">
-          <div class="partido-equipos">
-            <span class="equipo-local">${p.local}</span>
-            <span class="vs">${resultados[p.id].local} - ${resultados[p.id].visita}</span>
-            <span class="equipo-visita">${p.visita}</span>
-          </div>
-          <div style="font-size:0.7rem; color:#888; text-align:center; margin-top:5px">📅 ${p.fecha}</div>
-        </div>
-      `).join('') || '<div style="text-align:center; padding:20px">📋 Sin resultados aún</div>';
-
+      document.getElementById('ultimosResultados').innerHTML = ultimos.map(p => `<div class="partido-item"><div class="partido-equipos"><span class="equipo-local">${p.local}</span><span class="vs">${resultados[p.id].local} - ${resultados[p.id].visita}</span><span class="equipo-visita">${p.visita}</span></div><div style="font-size:0.7rem;color:#888;text-align:center;margin-top:5px">📅 ${p.fecha}</div></div>`).join('') || '<div style="text-align:center;padding:20px">📋 Sin resultados aún</div>';
       const top = ranking[0] || { nombre: '-', total: 0, exactos: 0 };
-      document.getElementById('statsGrid').innerHTML = `
-        <div class="stat-card"><div class="value">${top.nombre}</div><div>🏆 Líder</div></div>
-        <div class="stat-card"><div class="value">${top.total}</div><div>Puntos Totales</div></div>
-        <div class="stat-card"><div class="value">${top.exactos}</div><div>🎯 Exactos</div></div>
-        <div class="stat-card"><div class="value">${Object.keys(resultados).length}</div><div>Partidos Jugados</div></div>
-      `;
+      document.getElementById('statsGrid').innerHTML = `<div class="stat-card"><div class="value">${top.nombre}</div><div>🏆 Líder</div></div><div class="stat-card"><div class="value">${top.total}</div><div>Puntos Totales</div></div><div class="stat-card"><div class="value">${top.exactos}</div><div>🎯 Exactos</div></div><div class="stat-card"><div class="value">${Object.keys(resultados).length}</div><div>Partidos Jugados</div></div>`;
     }
 
-    // ==================== PREDICCIONES (SIN BOTONES DE BORRAR PARA EQUIPOS) ====================
     function renderPredicciones() {
       if (!currentUser || currentUser.isAdmin) {
-        document.getElementById('prediccionesList').innerHTML = '<div style="text-align:center; padding:20px">🔒 Inicia sesión para hacer tus predicciones</div>';
+        document.getElementById('prediccionesList').innerHTML = '<div style="text-align:center;padding:20px">🔒 Inicia sesión para hacer tus predicciones</div>';
         return;
       }
-
       const misPreds = predicciones[currentUser.id] || {};
       const grupos = {};
-      
-      for (const p of PARTIDOS) {
-        if (!grupos[p.grupo]) grupos[p.grupo] = [];
-        grupos[p.grupo].push(p);
-      }
-
+      for (const p of PARTIDOS) { if (!grupos[p.grupo]) grupos[p.grupo] = []; grupos[p.grupo].push(p); }
       let html = '';
       for (const grupo of Object.keys(grupos).sort()) {
         html += `<div class="grupo-titulo">🏳️ Grupo ${grupo}</div>`;
         for (const p of grupos[grupo]) {
           const res = resultados[p.id];
           const pred = misPreds[p.id] || {};
-          const bloqueado = res !== undefined;
-          
-          html += `<div class="partido-item">
-            <div class="partido-equipos">
-              <span class="equipo-local">${p.local}</span>
-              <span class="vs">VS</span>
-              <span class="equipo-visita">${p.visita}</span>
-            </div>
-            <div style="font-size:0.7rem; color:#888; text-align:center; margin:5px 0">📅 ${p.fecha} · Grupo ${p.grupo}</div>`;
-          
-          if (bloqueado) {
+          html += `<div class="partido-item"><div class="partido-equipos"><span class="equipo-local">${p.local}</span><span class="vs">VS</span><span class="equipo-visita">${p.visita}</span></div><div style="font-size:0.7rem;color:#888;text-align:center;margin:5px 0">📅 ${p.fecha} · Grupo ${p.grupo}</div>`;
+          if (res) {
             const pts = calcularPuntosPrediccion(pred.local, pred.visita, res.local, res.visita);
-            html += `<div class="pred-resultado">
-              🔒 Partido finalizado<br>
-              Tu predicción: ${pred.local !== undefined ? pred.local : '?'} - ${pred.visita !== undefined ? pred.visita : '?'}<br>
-              <span style="color: ${pts > 0 ? '#6c9ebf' : '#888'}">${pts !== null ? pts + ' puntos' : ''}</span>
-            </div>`;
+            html += `<div class="pred-resultado">🔒 Partido finalizado<br>Tu predicción: ${pred.local !== undefined ? pred.local : '?'} - ${pred.visita !== undefined ? pred.visita : '?'}<br><span style="color: ${pts > 0 ? '#6c9ebf' : '#888'}">${pts !== null ? pts + ' puntos' : ''}</span></div>`;
+          } else if (pred.local !== undefined && pred.visita !== undefined) {
+            html += `<div class="pred-resultado">✅ Tu predicción guardada: <strong>${pred.local} - ${pred.visita}</strong></div>`;
           } else {
-            // Si ya tiene predicción guardada, mostrarla pero sin permitir modificar
-            const tienePrediccion = pred.local !== undefined && pred.visita !== undefined;
-            if (tienePrediccion) {
-              html += `<div class="pred-resultado">
-                ✅ Tu predicción guardada: <strong>${pred.local} - ${pred.visita}</strong>
-              </div>`;
-            } else {
-              html += `<div class="pred-inputs">
-                <input type="number" id="predL_${p.id}" value="" placeholder="0" min="0" max="20" onchange="guardarPrediccion(${p.id})">
-                <span>-</span>
-                <input type="number" id="predV_${p.id}" value="" placeholder="0" min="0" max="20" onchange="guardarPrediccion(${p.id})">
-              </div>`;
-            }
+            html += `<div class="pred-inputs"><input type="number" id="predL_${p.id}" value="" placeholder="0" min="0" max="20" onchange="guardarPrediccion(${p.id})"><span>-</span><input type="number" id="predV_${p.id}" value="" placeholder="0" min="0" max="20" onchange="guardarPrediccion(${p.id})"></div>`;
           }
           html += `</div>`;
         }
@@ -851,148 +837,42 @@
 
     function guardarPrediccion(partidoId) {
       if (!currentUser || currentUser.isAdmin) return;
-      
-      // Verificar si ya existe una predicción para este partido (no permitir modificar)
       const misPreds = predicciones[currentUser.id] || {};
       if (misPreds[partidoId] && misPreds[partidoId].local !== undefined) {
         mostrarToast('❌ No puedes modificar una predicción ya guardada', 'error');
-        renderPredicciones(); // Recargar para mostrar el mensaje
+        renderPredicciones();
         return;
       }
-      
       const local = document.getElementById(`predL_${partidoId}`).value;
       const visita = document.getElementById(`predV_${partidoId}`).value;
-      
-      if (local === '' || visita === '') {
-        mostrarToast('❌ Ingresa ambos marcadores', 'error');
-        return;
-      }
-      
+      if (local === '' || visita === '') { mostrarToast('❌ Ingresa ambos marcadores', 'error'); return; }
       if (!predicciones[currentUser.id]) predicciones[currentUser.id] = {};
-      
-      predicciones[currentUser.id][partidoId] = {
-        local: parseInt(local),
-        visita: parseInt(visita)
-      };
-      
+      predicciones[currentUser.id][partidoId] = { local: parseInt(local), visita: parseInt(visita) };
       saveData();
       mostrarToast('✅ Predicción guardada (no se puede modificar después)');
       renderPredicciones();
     }
 
-    // ==================== ADMIN - EQUIPOS ====================
     function renderAdminEquipos() {
-      const html = `
-        <div class="card">
-          <div class="card-title">👥 Gestión de Equipos</div>
-          ${equipos.map(eq => `
-            <div class="equipo-row">
-              <input type="text" id="nombre_${eq.id}" value="${eq.nombre}" style="width:150px">
-              <input type="password" id="pin_${eq.id}" value="${eq.pin}" style="width:80px">
-              <span style="color: ${eq.activo ? '#6c9ebf' : '#ff6b6b'}">${eq.activo ? '✅ Activo' : '❌ Inactivo'}</span>
-              <button class="btn btn-primary" onclick="guardarEquipo(${eq.id})">💾</button>
-              <button class="btn ${eq.activo ? 'btn-danger' : 'btn-success'}" onclick="toggleEquipo(${eq.id})">${eq.activo ? '❌' : '✅'}</button>
-            </div>
-          `).join('')}
-          <button class="btn btn-primary" style="margin-top:1rem" onclick="agregarEquipo()">+ Agregar Equipo</button>
-        </div>
-      `;
+      const html = `<div class="card"><div class="card-title">👥 Gestión de Equipos</div>${equipos.map(eq => `<div class="equipo-row"><input type="text" id="nombre_${eq.id}" value="${eq.nombre}" style="width:150px"><input type="password" id="pin_${eq.id}" value="${eq.pin}" style="width:80px"><span style="color:${eq.activo?'#6c9ebf':'#ff6b6b'}">${eq.activo?'✅ Activo':'❌ Inactivo'}</span><button class="btn btn-primary" onclick="guardarEquipo(${eq.id})">💾</button><button class="btn ${eq.activo?'btn-danger':'btn-success'}" onclick="toggleEquipo(${eq.id})">${eq.activo?'❌':'✅'}</button></div>`).join('')}<button class="btn btn-primary" style="margin-top:1rem" onclick="agregarEquipo()">+ Agregar Equipo</button></div>`;
       document.getElementById('adminEquipos').innerHTML = html;
     }
 
-    // ==================== ADMIN - RESULTADOS ====================
     function renderAdminResultados() {
-      let html = `
-        <div class="card">
-          <div class="card-title">⚽ Registrar Resultados Reales</div>
-          <div style="margin-bottom: 1rem; display: flex; gap: 0.5rem;">
-            <button class="btn btn-danger" onclick="borrarTodosResultados()">🗑️ Borrar TODOS los resultados</button>
-          </div>
-      `;
-      
+      let html = `<div class="card"><div class="card-title">⚽ Registrar Resultados Reales</div><div style="margin-bottom:1rem"><button class="btn btn-danger" onclick="borrarTodosResultados()">🗑️ Borrar TODOS los resultados</button></div>`;
       for (const p of PARTIDOS) {
         const res = resultados[p.id] || {};
-        html += `
-          <div class="partido-item">
-            <div class="partido-equipos">
-              <span class="equipo-local"><strong>${p.local}</strong></span>
-              <span class="vs">VS</span>
-              <span class="equipo-visita"><strong>${p.visita}</strong></span>
-            </div>
-            <div style="display:flex; justify-content:center; gap:0.5rem; margin-top:0.5rem; flex-wrap:wrap">
-              <input type="number" id="resL_${p.id}" class="resultado-input" value="${res.local || ''}" placeholder="0" min="0" max="20">
-              <span>-</span>
-              <input type="number" id="resV_${p.id}" class="resultado-input" value="${res.visita || ''}" placeholder="0" min="0" max="20">
-              <button class="btn btn-primary" onclick="guardarResultado(${p.id})">💾 Guardar</button>
-              ${res.local !== undefined ? `<button class="btn btn-danger" onclick="borrarResultado(${p.id})">🗑️</button>` : ''}
-            </div>
-            <div style="font-size:0.7rem; color:#888; text-align:center; margin-top:5px">📅 ${p.fecha} · Grupo ${p.grupo}</div>
-          </div>
-        `;
+        html += `<div class="partido-item"><div class="partido-equipos"><span class="equipo-local"><strong>${p.local}</strong></span><span class="vs">VS</span><span class="equipo-visita"><strong>${p.visita}</strong></span></div><div style="display:flex;justify-content:center;gap:0.5rem;margin-top:0.5rem;flex-wrap:wrap"><input type="number" id="resL_${p.id}" class="resultado-input" value="${res.local||''}" placeholder="0"><span>-</span><input type="number" id="resV_${p.id}" class="resultado-input" value="${res.visita||''}" placeholder="0"><button class="btn btn-primary" onclick="guardarResultado(${p.id})">💾 Guardar</button>${res.local!==undefined?`<button class="btn btn-danger" onclick="borrarResultado(${p.id})">🗑️</button>`:''}</div><div style="font-size:0.7rem;color:#888;text-align:center;margin-top:5px">📅 ${p.fecha} · Grupo ${p.grupo}</div></div>`;
       }
       html += `</div>`;
       document.getElementById('adminResultados').innerHTML = html;
     }
 
-    function guardarResultado(partidoId) {
-      const local = document.getElementById(`resL_${partidoId}`).value;
-      const visita = document.getElementById(`resV_${partidoId}`).value;
-      
-      if (local === '' || visita === '') {
-        mostrarToast('❌ Ingresa ambos marcadores', 'error');
-        return;
-      }
-      
-      resultados[partidoId] = { local: parseInt(local), visita: parseInt(visita) };
-      saveData();
-      mostrarToast('✅ Resultado guardado');
-      renderAdminResultados();
-      renderDashboard();
-      if (currentUser && !currentUser.isAdmin) renderPredicciones();
-    }
-
-    function borrarResultado(partidoId) {
-      delete resultados[partidoId];
-      saveData();
-      mostrarToast('🗑️ Resultado eliminado');
-      renderAdminResultados();
-      renderDashboard();
-      if (currentUser && !currentUser.isAdmin) renderPredicciones();
-    }
-
-    function borrarTodosResultados() {
-      if (confirm('⚠️ ¿Estás seguro? Esto borrará TODOS los resultados de los partidos. Esta acción no se puede deshacer.')) {
-        resultados = {};
-        saveData();
-        mostrarToast('🗑️ Todos los resultados han sido eliminados');
-        renderAdminResultados();
-        renderDashboard();
-        if (currentUser && !currentUser.isAdmin) renderPredicciones();
-      }
-    }
-
-    // ==================== ADMIN - ADHERENCIA ====================
     function renderAdminAdherencia() {
       const hoy = new Date().toISOString().split('T')[0];
       const fechas = [];
-      for (let i = 0; i < 30; i++) {
-        const fecha = new Date();
-        fecha.setDate(fecha.getDate() - i);
-        fechas.push(fecha.toISOString().split('T')[0]);
-      }
-      
-      let html = `
-        <div class="card">
-          <div class="card-title">📋 Adherencia Operativa Diaria</div>
-          <div style="margin-bottom:1rem">
-            <label>Fecha: </label>
-            <select id="adhFechaSelect" onchange="cargarAdherenciaFecha()">
-              ${fechas.map(f => `<option value="${f}" ${f === hoy ? 'selected' : ''}>${f}</option>`).join('')}
-            </select>
-          </div>
-          <div id="adherenciaDia"></div>
-        </div>
-      `;
+      for (let i = 0; i < 30; i++) { const f = new Date(); f.setDate(f.getDate() - i); fechas.push(f.toISOString().split('T')[0]); }
+      let html = `<div class="card"><div class="card-title">📋 Adherencia Operativa Diaria</div><div style="margin-bottom:1rem"><label>Fecha: </label><select id="adhFechaSelect" onchange="cargarAdherenciaFecha()">${fechas.map(f => `<option value="${f}" ${f===hoy?'selected':''}>${f}</option>`).join('')}</select></div><div id="adherenciaDia"></div></div>`;
       document.getElementById('adminAdherencia').innerHTML = html;
       cargarAdherenciaFecha();
     }
@@ -1000,22 +880,10 @@
     function cargarAdherenciaFecha() {
       const fecha = document.getElementById('adhFechaSelect').value;
       let html = `<div class="adherencia-grid">`;
-      
       for (const equipo of equipos) {
         if (!equipo.activo) continue;
         const valorActual = (adherencia[equipo.id] && adherencia[equipo.id][fecha]) || null;
-        
-        html += `
-          <div class="adh-equipo">
-            <span><strong>${equipo.nombre}</strong></span>
-            <div class="adh-btns">
-              <button class="adh-btn ${valorActual === 5 ? 'selected' : ''}" onclick="setAdherencia(${equipo.id}, '${fecha}', 5)">✅ Todos (+5)</button>
-              <button class="adh-btn ${valorActual === 3 ? 'selected' : ''}" onclick="setAdherencia(${equipo.id}, '${fecha}', 3)">⚠️ 1 incumple (+3)</button>
-              <button class="adh-btn ${valorActual === 1 ? 'selected' : ''}" onclick="setAdherencia(${equipo.id}, '${fecha}', 1)">⚠️⚠️ 2 incumplen (+1)</button>
-              <button class="adh-btn ${valorActual === 0 ? 'selected' : ''}" onclick="setAdherencia(${equipo.id}, '${fecha}', 0)">❌ Más de 2 (0)</button>
-            </div>
-          </div>
-        `;
+        html += `<div class="adh-equipo"><span><strong>${equipo.nombre}</strong></span><div class="adh-btns"><button class="adh-btn ${valorActual===5?'selected':''}" onclick="setAdherencia(${equipo.id},'${fecha}',5)">✅ Todos (+5)</button><button class="adh-btn ${valorActual===3?'selected':''}" onclick="setAdherencia(${equipo.id},'${fecha}',3)">⚠️ 1 incumple (+3)</button><button class="adh-btn ${valorActual===1?'selected':''}" onclick="setAdherencia(${equipo.id},'${fecha}',1)">⚠️⚠️ 2 incumplen (+1)</button><button class="adh-btn ${valorActual===0?'selected':''}" onclick="setAdherencia(${equipo.id},'${fecha}',0)">❌ Más de 2 (0)</button></div></div>`;
       }
       html += `</div>`;
       document.getElementById('adherenciaDia').innerHTML = html;
@@ -1029,131 +897,61 @@
       cargarAdherenciaFecha();
     }
 
-    // ==================== ADMIN - BONOS ====================
     function renderAdminBonos() {
-      let html = `
-        <div class="card">
-          <div class="card-title">⭐ Bonificaciones (Fair Play)</div>
-          <div class="bono-row">
-            <select id="bonoEquipo">${equipos.filter(e => e.activo).map(e => `<option value="${e.id}">${e.nombre}</option>`).join('')}</select>
-            <select id="bonotipo">
-              <option value="adherenciaSemanal">🏆 Mejor adherencia semanal (+10)</option>
-              <option value="calidadSemanal">📊 Mejor calidad semanal (+10)</option>
-              <option value="productividadSemanal">⚡ Mejor productividad semanal (+10)</option>
-              <option value="asistencia">🎉 Mayor asistencia actividades (+5)</option>
-              <option value="personalizado">✨ Personalizado</option>
-            </select>
-            <input type="number" id="bonoPuntosPersonalizado" placeholder="Puntos" style="width:80px; display:none">
-            <input type="text" id="bonoDescripcion" placeholder="Descripción" style="width:150px">
-            <button class="btn btn-primary" onclick="agregarBono()">+ Agregar</button>
-          </div>
-          <div style="margin-top:1rem">
-            <h4>Bonos registrados</h4>
-            ${bonos.map((b, i) => {
-              const eq = equipos.find(e => e.id === b.equipoId);
-              return `<div class="equipo-row">⭐ ${eq?.nombre}: +${b.puntos} pts - ${b.descripcion} <button class="btn btn-danger btn-sm" onclick="eliminarBono(${i})">🗑️</button></div>`;
-            }).join('') || '<div style="color:#888">No hay bonos registrados</div>'}
-          </div>
-        </div>
-      `;
+      let html = `<div class="card"><div class="card-title">⭐ Bonificaciones (Fair Play)</div><div class="bono-row"><select id="bonoEquipo">${equipos.filter(e=>e.activo).map(e=>`<option value="${e.id}">${e.nombre}</option>`).join('')}</select><select id="bonotipo"><option value="adherenciaSemanal">🏆 Mejor adherencia semanal (+10)</option><option value="calidadSemanal">📊 Mejor calidad semanal (+10)</option><option value="productividadSemanal">⚡ Mejor productividad semanal (+10)</option><option value="asistencia">🎉 Mayor asistencia actividades (+5)</option><option value="personalizado">✨ Personalizado</option></select><input type="number" id="bonoPuntosPersonalizado" placeholder="Puntos" style="width:80px;display:none"><input type="text" id="bonoDescripcion" placeholder="Descripción" style="width:150px"><button class="btn btn-primary" onclick="agregarBono()">+ Agregar</button></div><div style="margin-top:1rem"><h4>Bonos registrados</h4>${bonos.map((b,i)=>{const eq=equipos.find(e=>e.id===b.equipoId);return `<div class="equipo-row">⭐ ${eq?.nombre}: +${b.puntos} pts - ${b.descripcion} <button class="btn btn-danger btn-sm" onclick="eliminarBono(${i})">🗑️</button></div>`;}).join('')||'<div style="color:#888">No hay bonos registrados</div>'}</div></div>`;
       document.getElementById('adminBonos').innerHTML = html;
-      
-      document.getElementById('bonotipo').addEventListener('change', function() {
-        document.getElementById('bonoPuntosPersonalizado').style.display = this.value === 'personalizado' ? 'inline-block' : 'none';
-      });
+      document.getElementById('bonotipo').addEventListener('change',function(){document.getElementById('bonoPuntosPersonalizado').style.display=this.value==='personalizado'?'inline-block':'none';});
     }
 
     function agregarBono() {
-      const equipoId = parseInt(document.getElementById('bonoEquipo').value);
-      const tipo = document.getElementById('bonotipo').value;
-      let puntos = CONFIG.ptsBonos[tipo] || 0;
-      if (tipo === 'personalizado') puntos = parseInt(document.getElementById('bonoPuntosPersonalizado').value) || 0;
-      const descripcion = document.getElementById('bonoDescripcion').value || `Bono por ${tipo}`;
-      
-      bonos.push({ equipoId, puntos, descripcion, fecha: new Date().toLocaleDateString() });
+      const equipoId=parseInt(document.getElementById('bonoEquipo').value);
+      const tipo=document.getElementById('bonotipo').value;
+      let puntos=CONFIG.ptsBonos[tipo]||0;
+      if(tipo==='personalizado') puntos=parseInt(document.getElementById('bonoPuntosPersonalizado').value)||0;
+      const descripcion=document.getElementById('bonoDescripcion').value||`Bono por ${tipo}`;
+      bonos.push({equipoId,puntos,descripcion,fecha:new Date().toLocaleDateString()});
       saveData();
       mostrarToast(`⭐ Bono agregado: +${puntos} puntos`);
       renderAdminBonos();
     }
 
-    function eliminarBono(index) { bonos.splice(index, 1); saveData(); mostrarToast('🗑️ Bono eliminado'); renderAdminBonos(); }
+    function eliminarBono(index){bonos.splice(index,1);saveData();mostrarToast('🗑️ Bono eliminado');renderAdminBonos();}
 
-    // ==================== ADMIN - PENALIZACIONES ====================
     function renderAdminPenalizaciones() {
-      let html = `
-        <div class="card">
-          <div class="card-title">🚫 Penalizaciones</div>
-          <div class="bono-row">
-            <select id="penEquipo">${equipos.filter(e => e.activo).map(e => `<option value="${e.id}">${e.nombre}</option>`).join('')}</select>
-            <select id="pentipo">
-              <option value="conducta">🚨 Conducta antideportiva (-5)</option>
-              <option value="inasistencia">📅 Inasistencia injustificada (-10)</option>
-              <option value="convivencia">🤝 Incumplimiento convivencia (-10)</option>
-              <option value="personalizado">✨ Personalizado</option>
-            </select>
-            <input type="number" id="penPuntosPersonalizado" placeholder="Puntos" style="width:80px; display:none">
-            <input type="text" id="penDescripcion" placeholder="Descripción" style="width:150px">
-            <button class="btn btn-danger" onclick="agregarPenalizacion()">- Aplicar</button>
-          </div>
-          <div style="margin-top:1rem">
-            <h4>Penalizaciones registradas</h4>
-            ${penalizaciones.map((p, i) => {
-              const eq = equipos.find(e => e.id === p.equipoId);
-              return `<div class="equipo-row">⚠️ ${eq?.nombre}: ${p.puntos} pts - ${p.descripcion} <button class="btn btn-danger btn-sm" onclick="eliminarPenalizacion(${i})">🗑️</button></div>`;
-            }).join('') || '<div style="color:#888">No hay penalizaciones registradas</div>'}
-          </div>
-        </div>
-      `;
+      let html = `<div class="card"><div class="card-title">🚫 Penalizaciones</div><div class="bono-row"><select id="penEquipo">${equipos.filter(e=>e.activo).map(e=>`<option value="${e.id}">${e.nombre}</option>`).join('')}</select><select id="pentipo"><option value="conducta">🚨 Conducta antideportiva (-5)</option><option value="inasistencia">📅 Inasistencia injustificada (-10)</option><option value="convivencia">🤝 Incumplimiento convivencia (-10)</option><option value="personalizado">✨ Personalizado</option></select><input type="number" id="penPuntosPersonalizado" placeholder="Puntos" style="width:80px;display:none"><input type="text" id="penDescripcion" placeholder="Descripción" style="width:150px"><button class="btn btn-danger" onclick="agregarPenalizacion()">- Aplicar</button></div><div style="margin-top:1rem"><h4>Penalizaciones registradas</h4>${penalizaciones.map((p,i)=>{const eq=equipos.find(e=>e.id===p.equipoId);return `<div class="equipo-row">⚠️ ${eq?.nombre}: ${p.puntos} pts - ${p.descripcion} <button class="btn btn-danger btn-sm" onclick="eliminarPenalizacion(${i})">🗑️</button></div>`;}).join('')||'<div style="color:#888">No hay penalizaciones registradas</div>'}</div></div>`;
       document.getElementById('adminPenalizaciones').innerHTML = html;
-      
-      document.getElementById('pentipo').addEventListener('change', function() {
-        document.getElementById('penPuntosPersonalizado').style.display = this.value === 'personalizado' ? 'inline-block' : 'none';
-      });
+      document.getElementById('pentipo').addEventListener('change',function(){document.getElementById('penPuntosPersonalizado').style.display=this.value==='personalizado'?'inline-block':'none';});
     }
 
     function agregarPenalizacion() {
-      const equipoId = parseInt(document.getElementById('penEquipo').value);
-      const tipo = document.getElementById('pentipo').value;
-      let puntos = CONFIG.ptsPenalizaciones[tipo] || 0;
-      if (tipo === 'personalizado') puntos = parseInt(document.getElementById('penPuntosPersonalizado').value) || 0;
-      const descripcion = document.getElementById('penDescripcion').value || `Penalización por ${tipo}`;
-      
-      penalizaciones.push({ equipoId, puntos, descripcion, fecha: new Date().toLocaleDateString() });
+      const equipoId=parseInt(document.getElementById('penEquipo').value);
+      const tipo=document.getElementById('pentipo').value;
+      let puntos=CONFIG.ptsPenalizaciones[tipo]||0;
+      if(tipo==='personalizado') puntos=parseInt(document.getElementById('penPuntosPersonalizado').value)||0;
+      const descripcion=document.getElementById('penDescripcion').value||`Penalización por ${tipo}`;
+      penalizaciones.push({equipoId,puntos,descripcion,fecha:new Date().toLocaleDateString()});
       saveData();
       mostrarToast(`🚫 Penalización aplicada: ${puntos} puntos`);
       renderAdminPenalizaciones();
     }
 
-    function eliminarPenalizacion(index) { penalizaciones.splice(index, 1); saveData(); mostrarToast('🗑️ Penalización eliminada'); renderAdminPenalizaciones(); }
+    function eliminarPenalizacion(index){penalizaciones.splice(index,1);saveData();mostrarToast('🗑️ Penalización eliminada');renderAdminPenalizaciones();}
 
-    // ==================== ADMIN - VER PREDICCIONES ====================
     function renderAdminPredicciones() {
       let html = `<div class="card"><div class="card-title">👁️ Ver Predicciones de los Equipos</div>`;
-      
       for (const equipo of equipos) {
         if (!equipo.activo) continue;
         const predsEquipo = predicciones[equipo.id] || {};
         const cantidad = Object.keys(predsEquipo).length;
-        
-        html += `<div class="partido-item" style="margin-bottom: 1rem;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem;">
-            <strong style="color:#c0c0c0">${equipo.nombre}</strong>
-            <span style="color:#888">${cantidad} predicciones realizadas</span>
-            <button class="btn btn-danger btn-sm" onclick="borrarPrediccionesEquipo(${equipo.id})">🗑️ Borrar todas</button>
-          </div>`;
-        
+        html += `<div class="partido-item" style="margin-bottom:1rem"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;flex-wrap:wrap;gap:0.5rem"><strong style="color:#c0c0c0">${equipo.nombre}</strong><span style="color:#888">${cantidad} predicciones realizadas</span><button class="btn btn-danger btn-sm" onclick="borrarPrediccionesEquipo(${equipo.id})">🗑️ Borrar todas</button></div>`;
         if (cantidad > 0) {
-          html += `<div style="font-size:0.8rem; color:#888;">`;
+          html += `<div style="font-size:0.8rem;color:#888;">`;
           for (const p of PARTIDOS) {
             const pred = predsEquipo[p.id];
-            if (pred) {
-              html += `<div style="margin: 3px 0;">📅 ${p.fecha} - ${p.local} ${pred.local} vs ${pred.visita} ${p.visita}</div>`;
-            }
+            if (pred) html += `<div style="margin:3px 0">📅 ${p.fecha} - ${p.local} ${pred.local} vs ${pred.visita} ${p.visita}</div>`;
           }
           html += `</div>`;
-        } else {
-          html += `<div style="color:#888; font-size:0.8rem;">Sin predicciones aún</div>`;
-        }
+        } else { html += `<div style="color:#888;font-size:0.8rem">Sin predicciones aún</div>`; }
         html += `</div>`;
       }
       html += `</div>`;
@@ -1161,200 +959,57 @@
     }
 
     function borrarPrediccionesEquipo(equipoId) {
-      if (confirm(`⚠️ ¿Estás seguro? Esto borrará TODAS las predicciones de ${equipos.find(e => e.id === equipoId)?.nombre}.`)) {
-        if (predicciones[equipoId]) {
-          delete predicciones[equipoId];
-          saveData();
-          mostrarToast(`🗑️ Predicciones de ${equipos.find(e => e.id === equipoId)?.nombre} eliminadas`);
-          renderAdminPredicciones();
-          if (currentUser && currentUser.id === equipoId) renderPredicciones();
-        }
+      if (confirm(`⚠️ ¿Estás seguro? Esto borrará TODAS las predicciones de ${equipos.find(e=>e.id===equipoId)?.nombre}.`)) {
+        if (predicciones[equipoId]) { delete predicciones[equipoId]; saveData(); mostrarToast(`🗑️ Predicciones eliminadas`); renderAdminPredicciones(); if (currentUser && currentUser.id === equipoId) renderPredicciones(); }
       }
     }
 
-    // ==================== FUNCIONES EQUIPOS ====================
-    function guardarEquipo(id) {
-      const equipo = equipos.find(e => e.id === id);
-      if (equipo) {
-        equipo.nombre = document.getElementById(`nombre_${id}`).value;
-        equipo.pin = document.getElementById(`pin_${id}`).value;
-        saveData();
-        mostrarToast('✅ Equipo actualizado');
-        renderAdminEquipos();
-        cargarEquiposLogin();
-      }
-    }
-
-    function toggleEquipo(id) {
-      const equipo = equipos.find(e => e.id === id);
-      if (equipo) {
-        equipo.activo = !equipo.activo;
-        saveData();
-        mostrarToast(equipo.activo ? '✅ Equipo activado' : '❌ Equipo desactivado');
-        renderAdminEquipos();
-        cargarEquiposLogin();
-      }
-    }
-
-    function agregarEquipo() {
-      const newId = Math.max(...equipos.map(e => e.id), 0) + 1;
-      equipos.push({ id: newId, nombre: `Equipo ${newId}`, pin: String(newId).padStart(4, '0'), activo: true });
+    function guardarResultado(partidoId) {
+      const local=document.getElementById(`resL_${partidoId}`).value,visita=document.getElementById(`resV_${partidoId}`).value;
+      if(local===''||visita===''){mostrarToast('❌ Ingresa ambos marcadores','error');return;}
+      resultados[partidoId]={local:parseInt(local),visita:parseInt(visita)};
       saveData();
-      mostrarToast('➕ Equipo agregado');
-      renderAdminEquipos();
-      cargarEquiposLogin();
+      mostrarToast('✅ Resultado guardado');
+      renderAdminResultados();
+      renderDashboard();
+      if(currentUser&&!currentUser.isAdmin) renderPredicciones();
     }
 
-    // ==================== NAVEGACIÓN ====================
-    function showPage(page) {
-      currentPage = page;
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.getElementById(`page${page.charAt(0).toUpperCase() + page.slice(1)}`).classList.add('active');
-      
-      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-      
-      if (page === 'dashboard') renderDashboard();
-      if (page === 'predicciones') renderPredicciones();
-      if (page === 'admin' && currentUser?.isAdmin) showAdminTab('equipos');
-    }
+    function borrarResultado(partidoId){delete resultados[partidoId];saveData();mostrarToast('🗑️ Resultado eliminado');renderAdminResultados();renderDashboard();if(currentUser&&!currentUser.isAdmin) renderPredicciones();}
+    function borrarTodosResultados(){if(confirm('⚠️ ¿Estás seguro? Esto borrará TODOS los resultados.')){resultados={};saveData();mostrarToast('🗑️ Todos los resultados eliminados');renderAdminResultados();renderDashboard();if(currentUser&&!currentUser.isAdmin) renderPredicciones();}}
+    function guardarEquipo(id){const eq=equipos.find(e=>e.id===id);if(eq){eq.nombre=document.getElementById(`nombre_${id}`).value;eq.pin=document.getElementById(`pin_${id}`).value;saveData();mostrarToast('✅ Equipo actualizado');renderAdminEquipos();cargarEquiposLogin();}}
+    function toggleEquipo(id){const eq=equipos.find(e=>e.id===id);if(eq){eq.activo=!eq.activo;saveData();mostrarToast(eq.activo?'✅ Equipo activado':'❌ Equipo desactivado');renderAdminEquipos();cargarEquiposLogin();}}
+    function agregarEquipo(){const newId=Math.max(...equipos.map(e=>e.id),0)+1;equipos.push({id:newId,nombre:`Equipo ${newId}`,pin:String(newId).padStart(4,'0'),activo:true});saveData();mostrarToast('➕ Equipo agregado');renderAdminEquipos();cargarEquiposLogin();}
+    function showPage(page){currentPage=page;document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(`page${page.charAt(0).toUpperCase()+page.slice(1)}`).classList.add('active');if(page==='dashboard')renderDashboard();if(page==='predicciones')renderPredicciones();if(page==='admin'&&currentUser?.isAdmin)showAdminTab('equipos');}
+    function showAdminTab(tab){document.querySelectorAll('.admin-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.admin-panel').forEach(p=>p.classList.remove('active'));if(tab==='equipos'){document.querySelector('.admin-tab[onclick*="equipos"]').classList.add('active');document.getElementById('adminEquipos').classList.add('active');renderAdminEquipos();}
+    else if(tab==='resultados'){document.querySelector('.admin-tab[onclick*="resultados"]').classList.add('active');document.getElementById('adminResultados').classList.add('active');renderAdminResultados();}
+    else if(tab==='adherencia'){document.querySelector('.admin-tab[onclick*="adherencia"]').classList.add('active');document.getElementById('adminAdherencia').classList.add('active');renderAdminAdherencia();}
+    else if(tab==='bonos'){document.querySelector('.admin-tab[onclick*="bonos"]').classList.add('active');document.getElementById('adminBonos').classList.add('active');renderAdminBonos();}
+    else if(tab==='penalizaciones'){document.querySelector('.admin-tab[onclick*="penalizaciones"]').classList.add('active');document.getElementById('adminPenalizaciones').classList.add('active');renderAdminPenalizaciones();}
+    else if(tab==='prediccionesAdmin'){document.querySelector('.admin-tab[onclick*="prediccionesAdmin"]').classList.add('active');document.getElementById('adminPrediccionesAdmin').classList.add('active');renderAdminPredicciones();}}
+    function doLogin(){const equipoId=parseInt(document.getElementById('loginEquipo').value);const pin=document.getElementById('loginPin').value;const equipo=equipos.find(e=>e.id===equipoId&&e.pin===pin&&e.activo);if(!equipo){document.getElementById('loginError').style.display='block';return;}document.getElementById('loginError').style.display='none';currentUser={id:equipo.id,nombre:equipo.nombre,isAdmin:false};document.getElementById('loginScreen').style.display='none';document.getElementById('app').style.display='block';document.getElementById('userBadge').textContent=`🟢 ${equipo.nombre}`;showPage('dashboard');actualizarMobileNav();}
+    function doAdminLogin(){const pass=document.getElementById('adminPass').value;if(pass!==CONFIG.adminPass){document.getElementById('adminError').style.display='block';return;}document.getElementById('adminError').style.display='none';currentUser={id:0,nombre:'Admin',isAdmin:true};document.getElementById('adminLoginScreen').style.display='none';document.getElementById('app').style.display='block';document.getElementById('userBadge').textContent='⚙️ Admin';document.getElementById('adminBtn').style.display='block';showPage('dashboard');actualizarMobileNav();}
+    function logout(){currentUser=null;document.getElementById('app').style.display='none';document.getElementById('loginScreen').style.display='flex';document.getElementById('loginPin').value='';document.getElementById('adminBtn').style.display='none';}
+    function showAdminLogin(){document.getElementById('loginScreen').style.display='none';document.getElementById('adminLoginScreen').style.display='flex';}
+    function hideAdminLogin(){document.getElementById('adminLoginScreen').style.display='none';document.getElementById('loginScreen').style.display='flex';}
+    function actualizarMobileNav(){const mobileNav=document.getElementById('mobileNav');const pages=['dashboard','predicciones'];if(currentUser?.isAdmin)pages.push('admin');mobileNav.innerHTML=pages.map(p=>`<button onclick="showPage('${p}')" class="${currentPage===p?'active':''}">${p==='dashboard'?'📊':p==='predicciones'?'🎯':'⚙️'}<br><span style="font-size:0.6rem">${p}</span></button>`).join('');}
+    function cargarEquiposLogin(){const select=document.getElementById('loginEquipo');select.innerHTML='<option value="">-- Selecciona tu equipo --</option>'+equipos.filter(e=>e.activo).map(e=>`<option value="${e.id}">${e.nombre}</option>`).join('');}
+    function mostrarToast(mensaje,tipo='success'){const toast=document.createElement('div');toast.className=`toast ${tipo==='error'?'error':''}`;toast.textContent=mensaje;document.body.appendChild(toast);setTimeout(()=>toast.remove(),3000);}
 
-    function showAdminTab(tab) {
-      document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
-      
-      if (tab === 'equipos') {
-        document.querySelector('.admin-tab[onclick*="equipos"]').classList.add('active');
-        document.getElementById('adminEquipos').classList.add('active');
-        renderAdminEquipos();
-      } else if (tab === 'resultados') {
-        document.querySelector('.admin-tab[onclick*="resultados"]').classList.add('active');
-        document.getElementById('adminResultados').classList.add('active');
-        renderAdminResultados();
-      } else if (tab === 'adherencia') {
-        document.querySelector('.admin-tab[onclick*="adherencia"]').classList.add('active');
-        document.getElementById('adminAdherencia').classList.add('active');
-        renderAdminAdherencia();
-      } else if (tab === 'bonos') {
-        document.querySelector('.admin-tab[onclick*="bonos"]').classList.add('active');
-        document.getElementById('adminBonos').classList.add('active');
-        renderAdminBonos();
-      } else if (tab === 'penalizaciones') {
-        document.querySelector('.admin-tab[onclick*="penalizaciones"]').classList.add('active');
-        document.getElementById('adminPenalizaciones').classList.add('active');
-        renderAdminPenalizaciones();
-      } else if (tab === 'prediccionesAdmin') {
-        document.querySelector('.admin-tab[onclick*="prediccionesAdmin"]').classList.add('active');
-        document.getElementById('adminPrediccionesAdmin').classList.add('active');
-        renderAdminPredicciones();
-      }
-    }
+    // Mostrar splash y luego login
+    window.addEventListener('DOMContentLoaded', () => {
+      const splash = document.getElementById('splashScreen');
+      setTimeout(() => {
+        splash.classList.add('hide');
+        setTimeout(() => {
+          splash.style.display = 'none';
+          document.getElementById('loginScreen').style.display = 'flex';
+        }, 800);
+      }, 2500);
+    });
 
-    // ==================== AUTENTICACIÓN ====================
-    function doLogin() {
-      const equipoId = parseInt(document.getElementById('loginEquipo').value);
-      const pin = document.getElementById('loginPin').value;
-      const equipo = equipos.find(e => e.id === equipoId && e.pin === pin && e.activo);
-      
-      if (!equipo) { document.getElementById('loginError').style.display = 'block'; return; }
-      
-      document.getElementById('loginError').style.display = 'none';
-      currentUser = { id: equipo.id, nombre: equipo.nombre, isAdmin: false };
-      
-      document.getElementById('loginScreen').style.display = 'none';
-      document.getElementById('app').style.display = 'block';
-      document.getElementById('userBadge').textContent = `🟢 ${equipo.nombre}`;
-      
-      showPage('dashboard');
-      actualizarMobileNav();
-    }
-
-    function doAdminLogin() {
-      const pass = document.getElementById('adminPass').value;
-      if (pass !== CONFIG.adminPass) { document.getElementById('adminError').style.display = 'block'; return; }
-      
-      document.getElementById('adminError').style.display = 'none';
-      currentUser = { id: 0, nombre: 'Admin', isAdmin: true };
-      
-      document.getElementById('adminLoginScreen').style.display = 'none';
-      document.getElementById('app').style.display = 'block';
-      document.getElementById('userBadge').textContent = '⚙️ Admin';
-      document.getElementById('adminBtn').style.display = 'block';
-      
-      showPage('dashboard');
-      actualizarMobileNav();
-    }
-
-    function logout() {
-      currentUser = null;
-      document.getElementById('app').style.display = 'none';
-      document.getElementById('loginScreen').style.display = 'flex';
-      document.getElementById('loginPin').value = '';
-      document.getElementById('adminBtn').style.display = 'none';
-    }
-
-    function showAdminLogin() {
-      document.getElementById('loginScreen').style.display = 'none';
-      document.getElementById('adminLoginScreen').style.display = 'flex';
-    }
-
-    function hideAdminLogin() {
-      document.getElementById('adminLoginScreen').style.display = 'none';
-      document.getElementById('loginScreen').style.display = 'flex';
-    }
-
-    function actualizarMobileNav() {
-      const mobileNav = document.getElementById('mobileNav');
-      const pages = ['dashboard', 'predicciones'];
-      if (currentUser?.isAdmin) pages.push('admin');
-      
-      mobileNav.innerHTML = pages.map(p => `
-        <button onclick="showPage('${p}')" class="${currentPage === p ? 'active' : ''}">
-          ${p === 'dashboard' ? '📊' : p === 'predicciones' ? '🎯' : '⚙️'}
-          <br><span style="font-size:0.6rem">${p}</span>
-        </button>
-      `).join('');
-    }
-
-    function cargarEquiposLogin() {
-      const select = document.getElementById('loginEquipo');
-      select.innerHTML = '<option value="">-- Selecciona tu equipo --</option>' + 
-        equipos.filter(e => e.activo).map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
-    }
-
-    function mostrarToast(mensaje, tipo = 'success') {
-      const toast = document.createElement('div');
-      toast.className = `toast ${tipo === 'error' ? 'error' : ''}`;
-      toast.textContent = mensaje;
-      document.body.appendChild(toast);
-      setTimeout(() => toast.remove(), 3000);
-    }
-
-    // ==================== EXPORTAR FUNCIONES GLOBALES ====================
-    window.guardarPrediccion = guardarPrediccion;
-    window.guardarResultado = guardarResultado;
-    window.borrarResultado = borrarResultado;
-    window.borrarTodosResultados = borrarTodosResultados;
-    window.guardarEquipo = guardarEquipo;
-    window.toggleEquipo = toggleEquipo;
-    window.agregarEquipo = agregarEquipo;
-    window.setAdherencia = setAdherencia;
-    window.cargarAdherenciaFecha = cargarAdherenciaFecha;
-    window.agregarBono = agregarBono;
-    window.eliminarBono = eliminarBono;
-    window.agregarPenalizacion = agregarPenalizacion;
-    window.eliminarPenalizacion = eliminarPenalizacion;
-    window.borrarPrediccionesEquipo = borrarPrediccionesEquipo;
-    window.showPage = showPage;
-    window.showAdminTab = showAdminTab;
-    window.doLogin = doLogin;
-    window.doAdminLogin = doAdminLogin;
-    window.showAdminLogin = showAdminLogin;
-    window.hideAdminLogin = hideAdminLogin;
-    window.logout = logout;
-
-    // ==================== INICIALIZACIÓN ====================
-    loadData();
-    cargarEquiposLogin();
+    window.guardarPrediccion=guardarPrediccion;window.guardarResultado=guardarResultado;window.borrarResultado=borrarResultado;window.borrarTodosResultados=borrarTodosResultados;window.guardarEquipo=guardarEquipo;window.toggleEquipo=toggleEquipo;window.agregarEquipo=agregarEquipo;window.setAdherencia=setAdherencia;window.cargarAdherenciaFecha=cargarAdherenciaFecha;window.agregarBono=agregarBono;window.eliminarBono=eliminarBono;window.agregarPenalizacion=agregarPenalizacion;window.eliminarPenalizacion=eliminarPenalizacion;window.borrarPrediccionesEquipo=borrarPrediccionesEquipo;window.showPage=showPage;window.showAdminTab=showAdminTab;window.doLogin=doLogin;window.doAdminLogin=doAdminLogin;window.showAdminLogin=showAdminLogin;window.hideAdminLogin=hideAdminLogin;window.logout=logout;
+    loadData();cargarEquiposLogin();
   </script>
 </body>
 </html>
