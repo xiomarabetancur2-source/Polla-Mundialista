@@ -670,6 +670,20 @@ window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 );
+    async function probarSupabase() {
+
+  const { data, error } = await supabase
+    .from('equipos')
+    .select('*');
+
+  console.log('Equipos:', data);
+
+  if (error) {
+    console.error('Error:', error);
+  }
+}
+
+probarSupabase();
     // ==================== PARTIDOS ====================
     const PARTIDOS = [
       { id: 1, grupo: 'A', fecha: '11/06/2026', local: 'México', visita: 'Sudáfrica' },
